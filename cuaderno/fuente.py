@@ -1492,3 +1492,249 @@ print(registro.set_index("#").to_string())
 # Con los datos ya conocidos y sucios por escrito, el **paso 4** deja en claro qué se
 # está suponiendo: la tasa de IVA, el costo único del catálogo, la ventana de doce meses
 # y todo lo que se dio por bueno sin poder comprobarlo. Y qué pasaría si cada uno cambia.
+# %% [markdown]
+# ## Paso 4 · Supuestos declarados
+#
+# Todo análisis supone cosas. La diferencia entre uno honesto y uno que no lo es no está
+# en no suponer: está en **decirlo y medir cuánto pesa**. Este paso pone cada supuesto en
+# una fila con tres datos: por qué no se pudo comprobar, qué pasaría si es falso y cuánto
+# mueve el resultado.
+#
+# La regla es simple: un supuesto que se puede medir, se mide; uno que no, se escribe de
+# todas maneras y se dice que no se puede medir. Lo que no se hace es dejarlo invisible.
+
+# %%
+# * ---- SUPUESTO 1 · UN SOLO COSTO, EL DE HOY, PARA LOS DOCE MESES ---
+# * El catálogo trae un costo y ninguna fecha. Se aplica el mismo costo a cada mes, como
+# * si no hubiera cambiado en un año. Aquí se mide cuánto pesa si eso no es cierto.
+
+categoria = productos.set_index("codigo")["categoria"]
+costo_lista = productos.set_index("codigo")["costo_actual"]
+con_costo = ventas_limpias.assign(
+    categoria=ventas_limpias["producto_codigo"].map(categoria),
+    costo_unitario=ventas_limpias["producto_codigo"].map(costo_lista),
+)
+con_costo["venta_sin_iva"] = (con_costo["importe"] / (1 + IVA)).round(2)
+con_costo["costo_total"] = (con_costo["cantidad"] * con_costo["costo_unitario"]).round(2)
+venta_sin_iva = float(con_costo["venta_sin_iva"].sum())
+costo_total = float(con_costo["costo_total"].sum())
+margen = (venta_sin_iva - costo_total) / venta_sin_iva
+
+sensibilidad = []
+for cambio in (-0.10, -0.05, 0.0, 0.05, 0.10):
+    costo_alt = costo_total * (1 + cambio)
+    margen_alt = (venta_sin_iva - costo_alt) / venta_sin_iva
+    sensibilidad.append({
+        "si el costo fuera": f"{cambio:+.0%}",
+        "el costo sería": f"{costo_alt:,.2f}",
+        "el margen sería": f"{margen_alt:.1%}",
+        "y se movería": f"{(margen_alt - margen) * 100:+.1f} puntos",
+    })
+sensibilidad = pd.DataFrame(sensibilidad)
+print(f"venta sin IVA: MXN {venta_sin_iva:,.2f}")
+print(f"costo del catálogo: MXN {costo_total:,.2f}")
+print(f"margen bruto: {margen:.1%}")
+sensibilidad
+
+# * ---- PARTE 1 · EL MARGEN CON EL COSTO DEL CATÁLOGO ---
+# productos.set_index("codigo")["categoria"] → el catálogo convertido en dos listas que
+#   responden «¿qué categoría es?» y «¿cuánto cuesta?» dado un código de producto.
+# .assign(...) → agrega columnas calculadas a la tabla de ventas: la categoría y el costo
+#   de cada línea, pegados por el código del producto. Es el mismo buscarv de antes.
+# con_costo["importe"] / (1 + IVA) → la venta de la línea pasada a la base sin IVA. El
+#   margen se mide sin IVA porque el IVA no es del negocio: se cobra y se entera.
+# cantidad × costo_unitario → lo que costó esa línea. Sumado da el costo de lo vendido.
+# margen = (venta − costo) / venta → el margen bruto sobre la venta sin IVA. Es una
+#   proporción, no un monto: 0.114 quiere decir que de cada cien pesos vendidos quedan
+#   once y medio antes de pagar renta, sueldos y todo lo demás.
+# El ciclo for recorre cinco escenarios: el costo diez por ciento más abajo, cinco más
+#   abajo, igual, cinco más arriba y diez más arriba. Para cada uno recalcula el margen y
+#   lo guarda como un renglón de la tabla.
+# (margen_alt - margen) * 100 → la diferencia en puntos porcentuales, que es como se lee
+#   un cambio de margen: 4.4 puntos, no 4.4 por ciento.
+# ? La pregunta que contesta esta tabla no es «cuánto es el margen»: es «cuánto tendría
+# ? que equivocarme en el costo para que la respuesta cambie». Con un margen delgado, la
+# ? respuesta es: muy poco. Eso es lo que hay que saber antes de usar el margen para
+# ? decidir precios.
+
+# %%
+# * ---- SUPUESTO 2 · TODA LA VENTA AL 16 % ---
+# * La tasa se comprobó contra las notas, pero para un solo producto a la vez, no para el
+# * catálogo. En abarrotes hay partidas a tasa 0 %. Aquí se mide el escenario extremo.
+
+por_categoria = con_costo.groupby("categoria")[["venta_sin_iva", "costo_total"]].sum()
+por_categoria["margen"] = ((por_categoria["venta_sin_iva"] - por_categoria["costo_total"])
+                           / por_categoria["venta_sin_iva"])
+abarrotes = con_costo["categoria"] == "Abarrotes"
+abarrotes_con_iva = float(con_costo.loc[abarrotes, "importe"].sum())
+abarrotes_sin_iva = float(con_costo.loc[abarrotes, "venta_sin_iva"].sum())
+venta_alt = venta_sin_iva - abarrotes_sin_iva + abarrotes_con_iva
+margen_alt = (venta_alt - costo_total) / venta_alt
+print(f"abarrotes: venta sin IVA MXN {abarrotes_sin_iva:,.2f} · "
+      f"margen {por_categoria.loc['Abarrotes', 'margen']:.1%}")
+print(f"limpieza: venta sin IVA MXN "
+      f"{por_categoria.loc['Limpieza', 'venta_sin_iva']:,.2f} · "
+      f"margen {por_categoria.loc['Limpieza', 'margen']:.1%}")
+print(f"si los abarrotes fueran de tasa 0 %: la venta sin IVA sube a "
+      f"MXN {venta_alt:,.2f} y el margen a {margen_alt:.1%}")
+mostrar = por_categoria.assign(margen=por_categoria["margen"].map(lambda x: f"{x:.1%}"))
+mostrar["venta_sin_iva"] = mostrar["venta_sin_iva"].round(2)
+mostrar["costo_total"] = mostrar["costo_total"].round(2)
+mostrar
+
+# * ---- PARTE 1 · EL MARGEN PARTIDO POR CATEGORÍA ---
+# groupby("categoria")[[...]].sum() → suma dos columnas a la vez, agrupando por categoría.
+#   Los corchetes dobles piden una tabla de dos columnas, no una serie.
+# por_categoria["margen"] = ... → una columna calculada sobre la tabla agrupada, con la
+#   misma fórmula de antes aplicada a cada categoría.
+# abarrotes = con_costo["categoria"] == "Abarrotes" → una columna de True y False que
+#   marca las líneas de abarrotes. Se usa dos veces, para no repetir la condición.
+# El escenario extremo: si **todos** los abarrotes fueran de tasa 0 %, el importe con
+#   IVA de esas líneas ya sería la venta sin IVA, sin dividir entre 1.16. Por eso se resta
+#   la base calculada y se suma el importe tal cual.
+# .assign(margen=...map(...)) → una copia de la tabla con el margen ya formateado como
+#   porcentaje. Se formatea solo para mostrar: la cuenta sigue siendo el número de antes.
+# mostrar["venta_sin_iva"].round(2) → redondea a centavos las columnas de dinero, para que
+#   la tabla se lea como un reporte y no como una salida de programa.
+# ? Es el escenario más extremo, no el más probable. Se calcula igual porque marca el
+# ? techo: el margen verdadero está entre el número de arriba y este, y saber dónde está
+# ? el techo ayuda a decidir cuánta confianza ponerle al margen antes de tocarlo.
+# ! El margen es la cifra más frágil de todo el cuaderno: depende de un costo sin fecha y
+# ! de una tasa por producto que no está en ningún archivo. Ninguna decisión de precio
+# ! debería apoyarse solo en él.
+
+# %%
+# * ---- SUPUESTO 3 · LAS DEVOLUCIONES SE CARGAN AL MES EN QUE REGRESAN ---
+# * No es un supuesto del analista: es la convención que el dueño declaró en su carta. Se
+# * sigue, y aquí se mide cuánto cambia el mes si se siguiera la otra convención posible.
+
+folio_mes = ventas_limpias.groupby("folio")["mes"].first()
+comparable = notas.copy()
+comparable["mes_nota"] = comparable["fecha_nota"].astype(str).str[:7]
+comparable["mes_factura"] = comparable["folio_factura"].map(folio_mes)
+notas_por_nota = comparable.groupby("mes_nota")["importe_con_iva"].sum()
+notas_por_factura = comparable.groupby("mes_factura")["importe_con_iva"].sum()
+cambio_de_mes = notas_por_nota.sub(notas_por_factura, fill_value=0).round(2)
+cambian = int((comparable["mes_nota"] != comparable["mes_factura"]).sum())
+peor_mes = cambio_de_mes.abs().idxmax()
+cambio_peor = float(cambio_de_mes.loc[peor_mes])
+print(f"notas que cambiarían de mes: {cambian} de {len(comparable)}")
+print(f"el mes más afectado sería {peor_mes}: MXN {cambio_peor:,.2f}")
+cambio_de_mes[cambio_de_mes.abs() > 0.5].to_frame("diferencia")
+
+# * ---- PARTE 1 · LAS DOS CONVENCIONES, UNA AL LADO DE LA OTRA ---
+# folio_mes = groupby("folio")["mes"].first() → para cada factura, su mes. first() toma el
+#   primero de los valores del grupo; como todas las líneas de una factura comparten mes,
+#   el primero es el mes correcto.
+# comparable["mes_factura"] = comparable["folio_factura"].map(folio_mes) → pega a cada
+#   nota el mes de la factura que devuelve. Las notas que no encuentran su factura quedan
+#   vacías, y eso también es información.
+# Las dos agrupaciones suman el mismo dinero, repartido distinto: una por el mes de la nota
+#   y otra por el mes de la factura.
+# .sub(..., fill_value=0) → la diferencia mes a mes. Un mes que solo aparece en una de las
+#   dos convenciones sale con su monto completo, que es justo lo que se quiere ver.
+# ? La convención no cambia el total del año: reparte el mismo dinero entre meses
+# ? distintos. Por eso no aparece en el cuadre y sí aparece aquí: el cuadre del paso 2
+# ? usa la convención del dueño, y cualquiera que la cambie tiene que volver a correrlo.
+# ? Si un mes se mueve, la estacionalidad que se lee en el paso 5 se mueve con él.
+
+# %%
+# * ---- SUPUESTO 4 · LA FECHA DE UNA LÍNEA ES LA DE SU FACTURA ---
+# * Para resolver las fechas ambiguas se cruzó el folio contra el sistema. Eso supone que
+# * una línea ocurre el día de su factura. Aquí se mide cuánto dinero depende de eso.
+
+por_cruce = ventas_limpias[ventas_limpias["como_lei"] == "cruzada"]
+lineas_cruce = int(len(por_cruce))
+monto_cruce = round(float(por_cruce["importe"].sum()), 2)
+parte_cruce = monto_cruce / float(ventas_limpias["importe"].sum())
+print(f"fechas resueltas cruzando el folio: {lineas_cruce:,} líneas")
+print(f"monto que depende de ese cruce: MXN {monto_cruce:,.2f} "
+      f"({parte_cruce:.1%} de la venta)")
+print(f"si todas estuvieran en el mes equivocado, el desvío máximo por mes sería "
+      f"MXN {monto_cruce:,.2f}")
+
+# * ---- PARTE 1 · CUÁNTO PESA EL CRUCE ---
+# ventas_limpias["como_lei"] == "cruzada" → las líneas cuya fecha no se pudo leer sola y
+#   se tomó del archivo de facturas. Es el subconjunto donde el supuesto muerde.
+# El monto es la cota superior del error: si la fecha de la factura no fuera la de la
+#   línea, todo ese dinero podría estar en otro mes. No es el error esperado: es el
+#   máximo posible, y así se declara.
+# ? Se dice en porcentaje de la venta y no solo en pesos porque el porcentaje es lo que
+# ? dice si el supuesto es tolerable. Uno por ciento se aguanta; veinte, no.
+
+# %%
+# * ---- LOS SIETE SUPUESTOS, EN UNA TABLA ---
+# * Los que se pudieron medir llevan su cifra; los que no, lo dicen. Ninguno se queda sin
+# * decir qué pasaría si es falso.
+
+supuestos = pd.DataFrame([
+    {"#": 1,
+     "Supuesto": "El reporte del dueño es el total correcto",
+     "Por qué no se comprobó": "Es la referencia: no hay contra qué compararlo",
+     "Si es falso": "El cuadre y todo lo que cuelga de él están mal",
+     "Cuánto mueve": "no medible con estos datos"},
+    {"#": 2,
+     "Supuesto": "Un solo costo, el del catálogo, para los doce meses",
+     "Por qué no se comprobó": "El catálogo no trae fecha de costo",
+     "Si es falso": "El margen de todos los meses se mueve en la misma dirección",
+     "Cuánto mueve": "±5 % en el costo mueve el margen {:.1f} puntos".format(
+         abs((venta_sin_iva - costo_total * 1.05) / venta_sin_iva - margen) * 100)},
+    {"#": 3,
+     "Supuesto": "Toda la venta al 16 % de IVA",
+     "Por qué no se comprobó": "La tasa se comprueba en las notas, no por producto",
+     "Si es falso": "Con partidas de tasa 0 %, la base sin IVA y el margen suben",
+     "Cuánto mueve": f"el margen pasaría de {margen:.1%} a {margen_alt:.1%}"},
+    {"#": 4,
+     "Supuesto": "Las devoluciones se cargan al mes en que regresan",
+     "Por qué no se comprobó": "Es la convención que el dueño declara en su carta",
+     "Si es falso": "El dinero se reparte entre meses distintos, no cambia el total",
+     "Cuánto mueve": f"{cambian} de {len(comparable)} notas cambian de mes · "
+                     f"hasta MXN {abs(cambio_peor):,.2f} en {peor_mes}"},
+    {"#": 5,
+     "Supuesto": "La fecha de una línea es la de su factura",
+     "Por qué no se comprobó": "Se usa para resolver las fechas ambiguas",
+     "Si es falso": "Esas líneas podrían estar en otro mes",
+     "Cuánto mueve": f"{lineas_cruce:,} líneas · MXN {monto_cruce:,.2f} "
+                     f"({parte_cruce:.1%} de la venta)"},
+    {"#": 6,
+     "Supuesto": "La ventana de doce meses es la que importa",
+     "Por qué no se comprobó": "No hay historia anterior en el archivo de facturas",
+     "Si es falso": "La estacionalidad y la tendencia cambian de forma",
+     "Cuánto mueve": "no medible con estos datos"},
+    {"#": 7,
+     "Supuesto": "El pago mal aplicado se reasignó al saldo que coincide",
+     "Por qué no se comprobó": "Se apoya en dos señales, no en un documento",
+     "Si es falso": "El tramo de antigüedad de esa cartera se mueve",
+     "Cuánto mueve": f"MXN {movido:,.2f}"},
+])
+print(supuestos.set_index("#").to_string())
+
+# * ---- PARTE 1 · CÓMO SE LEE ESTA TABLA ---
+# Cada renglón tiene el mismo esqueleto que el registro del paso 3: qué se supone, por qué
+#   no se pudo comprobar, qué pasaría si es falso y cuánto mueve.
+# Los que dicen «no medible con estos datos» no son un hueco: son la respuesta honesta. Se
+#   podría inventar un rango, y sería peor que decir que no se sabe.
+# "... {:.1f} ...".format(...) → la forma anterior a los f-strings: el texto lleva un
+#   hueco con su formato y el valor entra al final. Se usa aquí porque el número es una
+#   cuenta larga y así no hay que partir la línea en tres pedazos.
+# ? La tabla se imprime completa, sin recortes: es el entregable del paso y lo que un
+# ? dueño puede leer sin abrir el código.
+
+# %% [markdown]
+# ## Lo que este paso deja
+#
+# - **Siete supuestos, todos a la vista.** Dos no se pueden medir y lo dicen; cinco tienen
+#   su cifra.
+# - **El margen es la cifra más frágil.** Depende de un costo sin fecha y de una tasa por
+#   producto que no está en ningún archivo. Un error del 5 % en el costo lo mueve 4.4
+#   puntos, y el escenario de tasa 0 % lo llevaría a casi el doble.
+# - **Dos supuestos no cambian el total, solo el mes.** Las devoluciones y las fechas
+#   resueltas por cruce reparten el mismo dinero distinto. Por eso no salen en el cuadre y
+#   sí en cualquier lectura de estacionalidad o de flujo mensual.
+# - **Lo que no se puede medir también se escribe.** El reporte del dueño y la ventana de
+#   doce meses son supuestos que no tienen número; sin ellos no hay análisis, y con ellos
+#   hay que saber que están ahí.
+#
+# Con los supuestos medidos, los **pasos 5 y 6** pueden decir cuánto dinero hay en juego y
+# cuánto de eso no se puede afirmar. Un hallazgo sin supuesto declarado no es un hallazgo:
+# es una opinión con gráficas.

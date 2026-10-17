@@ -14,12 +14,12 @@ Los datos son inventados y traen a propósito los defectos que traen los datos d
 
 ## Estado
 
-El cuaderno va por los **pasos 1, 2 y 3 de 7**:
+El cuaderno va por los **pasos 1, 2, 3 y 4 de 7**:
 
 1. ✅ Lo que pedí y lo que llegó
 2. ✅ Perfilado y validación contra los totales
 3. ✅ Registro de defectos
-4. ⬜ Supuestos declarados
+4. ✅ Supuestos declarados
 5. ⬜ Hallazgos por dinero en juego
 6. ⬜ Lo que estos datos no alcanzan a responder
 7. ⬜ Cómo sabremos si funcionó
