@@ -1135,3 +1135,360 @@ mensual
 # El archivo limpio (`ventas_limpias`) es el que se usa de aquí en adelante. El **paso 3**
 # se dedica a cada defecto por separado: qué se encontró, con qué evidencia, qué se
 # decidió y cuánto dinero mueve cada uno.
+# %% [markdown]
+# ## Paso 3 · Registro de defectos
+#
+# El cuadre del paso 2 dice que el total cierra. Eso no dice que los datos estén
+# limpios: cuatro de los ocho defectos no movieron ni un peso del total y aun así
+# cambian lo que se puede concluir. Este paso pone cada defecto en una fila, con cuatro
+# columnas fijas: **qué encontré, con qué evidencia, qué decidí y cuánto dinero mueve**.
+#
+# La evidencia no es una impresión: es el conteo que se puede volver a hacer. Y el
+# efecto se mide, no se estima: cada cifra de la última columna sale de un cálculo que
+# está en esta misma celda o en las de arriba.
+
+# %%
+# * ---- DEFECTO 1 · FECHAS ESCRITAS COMO TEXTO, EN DOS FORMATOS ---
+# * El efecto de este defecto no está en el total del año: está en el mes. Si una fecha
+# * se lee al revés, el peso aparece en otro mes y la estacionalidad se ve distinta.
+
+def mes_ingenuo(texto):
+    """El mes que saldría leyendo todo como dd/mm, sin ninguna regla."""
+    if "-" in texto:
+        return texto[:7]
+    a, b, anio = (int(p) for p in texto.split("/"))
+    if b > 12:
+        return None
+    return f"{anio}-{b:02d}"
+
+con_texto = int(ventas_limpias["fecha"].str.contains("/").sum())
+ingenuo = ventas_limpias["fecha"].map(mes_ingenuo)
+imposibles = int(ingenuo.isna().sum())
+cambian = int((ingenuo.notna() & (ingenuo != ventas_limpias["mes"])).sum())
+ok = ingenuo.notna()
+malo = ventas_limpias[ok].groupby(ingenuo[ok])["importe"].sum()
+bien = ventas_limpias[ok].groupby("mes")["importe"].sum()
+desvio = malo.sub(bien, fill_value=0).round(2)
+desvio_real = desvio.reindex(bien.index).fillna(0)
+peor = desvio_real.abs().idxmax()
+desvio_peor = float(desvio_real.loc[peor])
+meses_tocados = int((desvio_real.abs() > 0.5).sum())
+pd.DataFrame({"desvío": desvio.sort_values().head(3)}).rename_axis("mes")
+
+# * ---- PARTE 1 · QUÉ HABRÍA PASADO SIN LA REGLA ---
+# mes_ingenuo(texto) → la función que simula al lector descuidado: parte la fecha por
+#   las diagonales y supone que el primer número es el día, siempre.
+# if "-" in texto: return texto[:7] → si la fecha ya viene en formato ISO, el mes son
+#   sus primeros siete caracteres y no hay nada que suponer.
+# if b > 12: return None → si el segundo número pasa de doce, la lectura dd/mm es
+#   imposible (daría un mes 13 o mayor). Se devuelve None, que aquí quiere decir «esta
+#   fecha no se puede leer así».
+# ventas_limpias["fecha"].str.contains("/") → el .str deja usar métodos de texto sobre
+#   toda la columna; contains("/") pregunta, renglón por renglón, si la fecha trae
+#   diagonales, o sea, si está escrita como texto y no en ISO. El .sum() cuenta los
+#   True: cuántas líneas están en ese caso.
+# .map(mes_ingenuo) → aplica la función a cada fecha y devuelve una columna de meses
+#   «ingenuos», con None donde la lectura es imposible.
+# .isna() → marca con True las celdas vacías o None. Aquí cuenta las imposibles.
+# (ingenuo.notna() & (ingenuo != ventas_limpias["mes"])) → dos condiciones unidas con
+#   &: la fecha se pudo leer de las dos maneras y el mes no coincide. O sea, líneas que
+#   la lectura descuidada habría puesto en otro mes.
+# ok = ingenuo.notna() → la máscara de las que sí se pueden comparar. Se guarda para
+#   usar exactamente las mismas líneas en los dos lados de la resta.
+# groupby(ingenuo[ok])["importe"].sum() → suma el importe por mes según la lectura
+#   descuidada; groupby("mes") hace lo mismo con el mes ya corregido.
+# .sub(bien, fill_value=0) → resta los dos, tratando como cero el mes que aparece en una
+#   lista y no en la otra. Un mes que solo existe en la lectura mala sale con su monto
+#   completo: dinero que se habría inventado en un mes que no existe.
+# .abs().idxmax() → abs convierte todo a positivo e idxmax devuelve la etiqueta del
+#   mayor: el mes más afectado. .loc[peor] recupera su valor con signo.
+# .reindex(bien.index).fillna(0) → restringe la comparación a los doce meses que existen
+#   de verdad. Sin esto, un mes inventado por la lectura mala contaría como «mes
+#   afectado», y la cifra diría más meses de los que hay.
+# ? La última línea no calcula nada: muestra los tres meses más castigados, ordenados.
+# ? Es la evidencia que el lector puede revisar sin confiar en el texto.
+
+# %%
+# * ---- DEFECTOS 2 Y 3 · EL MISMO DINERO CONTADO DOS VECES ---
+# * Los dos son filas repetidas, pero se cargaron distinto y se detectan distinto: uno
+# * repite folios y el otro trae folios nuevos. Por eso van separados en el registro.
+
+copias = ventas[repetidas]
+reexportadas = copias[copias["lote_carga"].str.endswith("-RC")]
+mes_doble = copias[copias["lote_carga"].str.endswith("-B")]
+filas_rc = int(len(reexportadas))
+monto_rc = round(float(reexportadas["importe"].sum()), 2)
+folios_rc = int(reexportadas["folio"].nunique())
+filas_b = int(len(mes_doble))
+monto_b = round(float(mes_doble["importe"].sum()), 2)
+print(f"reexportación: {filas_rc} filas en {folios_rc} folios · MXN {monto_rc:,.2f}")
+print(f"mes duplicado: {filas_b} filas · MXN {monto_b:,.2f}")
+
+# * ---- PARTE 1 · SEPARAR LAS DOS CLASES DE COPIA ---
+# ventas[repetidas] → se queda solo con las filas que la marca del perfil señaló como
+#   copia. repetidas es una columna de True y False del mismo largo que la tabla, así
+#   que ponerla entre corchetes filtra los renglones.
+# .str.endswith("-RC") → otro método de texto: pregunta si el lote termina con esas
+#   letras. Es la forma de reconocer la reexportación de comprobantes.
+# .str.endswith("-B") → y esta, la segunda carga del mismo mes. La diferencia entre las
+#   dos importa: la reexportación repite folio, la segunda carga no; por eso la primera
+#   se detecta por folio y la segunda por contenido.
+# len(...) → cuántas filas. .nunique() en la columna de folios → cuántos documentos
+#   distintos, que es la cifra que interesa: no 120 filas sueltas, sino 30 facturas
+#   contadas dos veces.
+# ? El monto de cada clase se mide sobre el archivo tal como llegó, con su precio sin
+# ? corregir: es lo que el archivo decía de más, no lo que falta después de otras
+# ? correcciones. Mezclar las dos cosas es como se hacen las conciliaciones que no cierran.
+
+# %%
+# * ---- DEFECTOS 4 Y 8 · DOS BASES DE IVA Y DEVOLUCIONES SIN RESTAR ---
+# * Estos dos sí mueven el total, en direcciones opuestas, y quedaron corregidos en el
+# * paso 2. Aquí solo se deja su evidencia, para que entre al registro con los demás.
+
+lineas_iva = int(ventas_limpias["lote_carga"].isin(lotes).sum())
+print(f"lotes sin IVA: {', '.join(lotes)}")
+print(f"líneas afectadas: {lineas_iva:,} · ajuste: MXN {ajuste_iva:,.2f}")
+print(f"notas de crédito: {len(notas):,} · MXN {notas_total:,.2f}")
+print(f"tasa comprobada en las notas: {tasa_notas:.4f}")
+
+# * ---- PARTE 1 · LA EVIDENCIA QUE YA ESTABA CALCULADA ---
+# .isin(lotes) → True en las líneas cuyo lote está en la lista de los detectados; .sum()
+#   las cuenta. Es el mismo criterio con el que se corrigió el IVA en el paso 2, no uno
+#   nuevo inventado para esta tabla.
+# ajuste_iva y notas_total vienen de las celdas anteriores: no se recalculan aquí, se
+#   citan. Eso es lo que hace que la evidencia sea rastreable a la celda donde nació.
+# tasa_notas → la tasa que se despeja de las propias notas. Cerrar el registro citándola
+#   es lo que convierte «aplicamos 16 %» en «el 16 % está comprobado con tus datos».
+
+# %%
+# * ---- DEFECTOS 5 Y 6 · EL MISMO NEGOCIO DOS VECES Y EL MISMO PRODUCTO DOS NOMBRES ---
+# * Ninguno de los dos toca el total. Los dos cambian una respuesta: quién es el cliente
+# * más grande y qué producto es cuál. Se detectan buscando lo que se repite.
+
+clientes = pd.read_csv(RUTA_DATOS / "clientes.csv")
+rfc = clientes.set_index("codigo")["rfc"]
+por_codigo = ventas_limpias.groupby("cliente_codigo")["importe"].sum()
+por_rfc = ventas_limpias.assign(rfc=ventas_limpias["cliente_codigo"].map(rfc)) \
+    .groupby("rfc")["importe"].sum()
+total_venta = float(por_codigo.sum())
+top3_codigo = float(por_codigo.nlargest(3).sum()) / total_venta
+top3_rfc = float(por_rfc.nlargest(3).sum()) / total_venta
+nombres_repetidos = clientes.groupby("nombre")["codigo"].nunique()
+par = clientes[clientes["nombre"] == nombres_repetidos[nombres_repetidos > 1].index[0]]
+cuentas = par["codigo"].tolist()
+solo_una = float(por_codigo[cuentas[0]])
+juntas = float(por_codigo[cuentas].sum())
+lugar_juntas = int((por_codigo > juntas).sum()) + 1
+nombres_producto = ventas_limpias.groupby("producto_codigo")["producto_nombre"].nunique()
+renombrado = nombres_producto[nombres_producto > 1].index[0]
+mitades = sorted(ventas_limpias[ventas_limpias["producto_codigo"] == renombrado]
+                 ["producto_nombre"].unique())
+u_nombre = ventas_limpias.groupby("producto_nombre")["cantidad"].sum().sort_values(ascending=False)
+u_codigo = ventas_limpias.groupby("producto_codigo")["cantidad"].sum()
+lugares = [list(u_nombre.index).index(n) + 1 for n in mitades]
+lugar_codigo = int((u_codigo > u_codigo[renombrado]).sum()) + 1
+parte_nueva = float(min(u_nombre[n] for n in mitades)) / float(u_codigo[renombrado])
+print(f"el mismo negocio en dos cuentas: {cuentas}")
+print(f"la mayor sola: MXN {solo_una:,.2f} · las dos juntas: MXN {juntas:,.2f} (lugar {lugar_juntas})")
+print(f"concentración del top 3: {top3_codigo:.1%} por código · {top3_rfc:.1%} por RFC")
+print(f"producto renombrado: {renombrado} · lugares por nombre {lugares} · por código {lugar_codigo}")
+print(f"su volumen que parece nuevo: {parte_nueva:.1%}")
+
+# * ---- PARTE 1 · EL CLIENTE QUE ES UNO Y SON DOS ---
+# pd.read_csv(...) → el catálogo de clientes. Hasta ahora solo se habían contado sus
+#   columnas; aquí se usa por primera vez para leer el RFC.
+# .set_index("codigo")["rfc"] → convierte el catálogo en una lista que, dado un código
+#   de cliente, devuelve su RFC. Es el diccionario de traducción que ya se usó con las
+#   fechas, montado de otra forma.
+# .assign(rfc=...) → agrega a la tabla de ventas una columna calculada al vuelo: el RFC
+#   de cada cliente. .map(rfc) hace la traducción código por código.
+# groupby("rfc") → agrupa por contribuyente y no por cuenta. Ahí es donde el negocio
+#   con dos códigos se vuelve uno solo.
+# .nlargest(3) → las tres columnas más grandes; .sum() las junta. Dividir entre el total
+#   da la concentración, y la comparación entre las dos formas es el efecto del defecto.
+# nombres_repetidos > 1 → los nombres que aparecen en más de un código. En lugar de
+#   escribir a mano cuál es el cliente, se busca la condición: así la celda seguiría
+#   funcionando si el par fuera otro.
+# .tolist() → la columna de códigos como lista normal, para poder sumar las dos cuentas
+#   en un solo paso: por_codigo[cuentas].sum().
+# (por_codigo > juntas).sum() + 1 → cuántos clientes venden más que ese negocio
+#   consolidado, más uno: su lugar en el ranking.
+# * ---- PARTE 2 · EL PRODUCTO QUE CAMBIÓ DE NOMBRE ---
+# .nunique() sobre el grupo de producto → cuántos nombres distintos tiene cada código.
+#   El que tiene dos es el renombrado, y también se detecta por condición, no a mano.
+# u_nombre y u_codigo → las mismas unidades agrupadas de las dos maneras: por el nombre
+#   que aparece en el archivo y por el código del catálogo.
+# list(u_nombre.index).index(n) + 1 → el lugar que ocupa un nombre en la lista ordenada
+#   de mayor a menor, contando desde uno.
+# parte_nueva → qué proporción de su volumen quedó en la mitad que nació en abril. Es
+#   el tamaño del espejismo: parece un producto nuevo que apareció a mitad del año.
+
+# %%
+# * ---- DEFECTO 7 · EL PAGO APLICADO A LA FACTURA EQUIVOCADA ---
+# * Es el defecto más caro de leer mal, porque no cambia la cartera: cambia de qué
+# * antigüedad es cada peso. Y la antigüedad es lo que dispara las decisiones de cobro.
+
+emision = facturas.set_index("folio")["fecha_emision"]
+vencimiento = pd.to_datetime(facturas.set_index("folio")["fecha_vencimiento"])
+dias_atraso = (cierre.normalize() - vencimiento).dt.days
+
+def tramo(dias):
+    """Clasifica un atraso en el tramo de antigüedad que usa la cartera."""
+    if dias <= 0:
+        return "no vencido"
+    if dias <= 30:
+        return "1 a 30"
+    if dias <= 60:
+        return "31 a 60"
+    if dias <= 90:
+        return "61 a 90"
+    return "más de 90"
+
+def saldos(cobros):
+    """Saldo por factura: lo facturado menos lo cobrado y menos lo devuelto."""
+    s = facturas.set_index("folio")["importe_total"].astype(float)
+    s = s.sub(cobros.groupby("factura_aplicada")["importe"].sum(), fill_value=0)
+    s = s.sub(notas.groupby("folio_factura")["importe_con_iva"].sum(), fill_value=0)
+    return s.round(2)
+
+saldos_asis = saldos(pagos)
+pagos_imposibles = pagos[pagos["fecha_pago"] < pagos["factura_aplicada"].map(emision)]
+pagos_corregidos = pagos.copy()
+for _, p in pagos_imposibles.iterrows():
+    candidatas = facturas[(facturas["cliente_codigo"] == p["cliente_codigo"])
+                          & (facturas["fecha_emision"] < p["fecha_pago"])]
+    su_saldo = saldos_asis.reindex(candidatas["folio"])
+    victima = su_saldo[(su_saldo - p["importe"]).abs() < 0.01]
+    if len(victima) == 1:
+        pagos_corregidos.loc[pagos_corregidos["folio_pago"] == p["folio_pago"],
+                             "factura_aplicada"] = victima.index[0]
+
+saldos_ok = saldos(pagos_corregidos)
+abierto_antes = saldos_asis[saldos_asis > 0.005]
+abierto_despues = saldos_ok[saldos_ok > 0.005]
+t_antes = pd.DataFrame({"saldo": abierto_antes})
+t_antes["tramo"] = [tramo(dias_atraso[f]) for f in t_antes.index]
+t_despues = pd.DataFrame({"saldo": abierto_despues})
+t_despues["tramo"] = [tramo(dias_atraso[f]) for f in t_despues.index]
+antes = t_antes.groupby("tramo")["saldo"].sum()
+despues = t_despues.groupby("tramo")["saldo"].sum()
+delta = (despues.sub(antes, fill_value=0)).round(2)
+movido = float(-delta.get("más de 90", 0.0))
+pago_movido = float(pagos_imposibles["importe"].sum())
+print(f"pagos imposibles: {len(pagos_imposibles)} · MXN {pago_movido:,.2f}")
+print(f"cartera total: MXN {float(abierto_antes.sum()):,.2f} antes y "
+      f"MXN {float(abierto_despues.sum()):,.2f} después")
+print(delta.to_string())
+
+# * ---- PARTE 1 · LOS TRAMOS DE LA CARTERA ---
+# .dt.days → de una diferencia de fechas saca los días. Normalize quita la hora, para
+#   que el corte sea el día y no el día con su hora.
+# tramo(dias) → una función con varios if seguidos, la primera que se cumple gana. Es la
+#   clasificación que usa cualquier reporte de antigüedad de cartera.
+# saldos(cobros) → recibe la tabla de pagos y devuelve una serie con el saldo de cada
+#   factura. Se escribe como función porque se va a usar dos veces: con los pagos tal
+#   como están y con los pagos corregidos.
+# .astype(float) → asegura que el importe sea decimal y la resta no truene.
+# .sub(..., fill_value=0) → resta alineando por folio; cuando una factura no tiene
+#   pagos ni notas, ese lado vale cero y no deja un hueco.
+# ? Restar las notas no es un detalle: una devolución reduce lo que el cliente debe. Si
+# ? no se resta, la factura parece más vencida de lo que está.
+
+# * ---- PARTE 2 · DETECTAR Y CORREGIR ---
+# pagos["fecha_pago"] < pagos["factura_aplicada"].map(emision) → la regla que delata el
+#   defecto: un pago anterior a la emisión de la factura a la que se aplicó. No es una
+#   corazonada, es una imposibilidad del calendario.
+# .iterrows() → recorre la tabla fila por fila cuando hay que decidir caso por caso;
+#   para una sola fila no valía la pena, para esto sí.
+# candidatas → las facturas del mismo cliente emitidas antes del pago: las únicas a las
+#   que ese dinero pudo haberse aplicado.
+# .reindex(candidatas["folio"]) → toma de la serie de saldos solo esas facturas.
+# (su_saldo - p["importe"]).abs() < 0.01 → el saldo que coincide con el pago, con un
+#   centavo de tolerancia por el redondeo. La coincidencia es la segunda prueba, después
+#   de la fecha imposible.
+# .loc[condición, "factura_aplicada"] = ... → cambia la factura de ese pago y deja el
+#   resto de la tabla igual. Es la corrección, aplicada sobre una copia.
+# ! Si ninguna factura coincide, no se reasigna nada: adivinar el destino de un pago es
+# ! peor que dejarlo sin tocar y anotarlo.
+# delta → la diferencia por tramo entre la cartera corregida y la cruda. Lo que se mueve
+#   del tramo de más de 90 días es el efecto del defecto, y por eso la cartera total no
+#   cambia: el dinero no se creó ni se destruyó, cambió de columna.
+
+# %%
+# * ---- EL REGISTRO: LOS OCHO DEFECTOS EN UNA TABLA ---
+# * Es el entregable del paso: una fila por defecto, con su evidencia, la decisión que se
+# * tomó y el efecto medido. Ninguna fila dice «revisar»: todas dicen qué se hizo.
+
+registro = pd.DataFrame([
+    {"#": 1, "Defecto": "Fechas escritas como texto, en dos formatos",
+     "Evidencia": f"{con_texto:,} líneas con la fecha como texto · "
+                  f"{imposibles} imposibles de leer como dd/mm · {cambian} en otro mes",
+     "Decisión": "Leer por rango válido y cruzar el folio contra el sistema",
+     "Efecto": f"MXN {abs(desvio_peor):,.2f} en {peor} · {meses_tocados} meses afectados"},
+    {"#": 2, "Defecto": "Facturas reexportadas, con el mismo folio",
+     "Evidencia": f"{filas_rc} filas repetidas en {folios_rc} folios",
+     "Decisión": "Quitar por folio y producto: se queda la primera",
+     "Efecto": f"MXN {monto_rc:,.2f} contados dos veces"},
+    {"#": 3, "Defecto": "Un mes cargado dos veces, con folios nuevos",
+     "Evidencia": f"{filas_b} filas de junio en un lote aparte",
+     "Decisión": "Eliminar la segunda carga completa del mes",
+     "Efecto": f"MXN {monto_b:,.2f} contados dos veces"},
+    {"#": 4, "Defecto": "Precios con IVA y sin IVA mezclados",
+     "Evidencia": f"{lineas_iva:,} líneas en {len(lotes)} lotes de carga",
+     "Decisión": "Llevar todo a la base con IVA; tasa comprobada en las notas",
+     "Efecto": f"MXN {ajuste_iva:,.2f} de venta que el archivo no mostraba"},
+    {"#": 5, "Defecto": "El mismo negocio dado de alta con dos cuentas",
+     "Evidencia": f"{len(cuentas)} códigos con el mismo nombre y el mismo RFC",
+     "Decisión": "Consolidar por RFC en todo el cuaderno",
+     "Efecto": f"el mayor cliente factura MXN {juntas:,.2f}, no {solo_una:,.2f} · "
+               f"el top 3 pasa de {top3_codigo:.1%} a {top3_rfc:.1%}"},
+    {"#": 6, "Defecto": "Un producto que cambió de nombre a mitad del año",
+     "Evidencia": f"{renombrado} aparece con {len(mitades)} nombres distintos",
+     "Decisión": "Agrupar por código, no por nombre",
+     "Efecto": f"quedaba en los lugares {lugares[0]} y {lugares[-1]}; por código es el "
+               f"{lugar_codigo} · {parte_nueva:.1%} de su volumen parece producto nuevo"},
+    {"#": 7, "Defecto": "Un pago aplicado a la factura equivocada",
+     "Evidencia": f"{len(pagos_imposibles)} pago anterior a la emisión de su factura, "
+                  f"por MXN {pago_movido:,.2f}",
+     "Decisión": "Reasignarlo al saldo de la factura que le corresponde",
+     "Efecto": f"MXN {movido:,.2f} salen del tramo de más de 90 días; "
+               f"la cartera total no cambia"},
+    {"#": 8, "Defecto": "Notas de crédito que nunca se restaron",
+     "Evidencia": f"{len(notas):,} notas en un archivo aparte, "
+                  f"por MXN {notas_total:,.2f}",
+     "Decisión": "Restarlas en el mes en que el dueño las carga",
+     "Efecto": f"MXN {notas_total:,.2f} de venta que no era venta"},
+])
+print(registro.set_index("#").to_string())
+
+# * ---- PARTE 1 · CÓMO SE ARMA CADA RENGLÓN ---
+# Cada diccionario trae las cuatro columnas del brief —defecto, evidencia, decisión y
+#   efecto— más el número que lo ordena. Es el mismo patrón de tabla de todo el cuaderno.
+# Las cifras de Evidencia y Efecto no están escritas a mano: cada f-string mete el valor
+#   que se calculó en la celda de arriba. Si mañana cambia el archivo, la tabla se
+#   actualiza sola y no queda mintiendo.
+# .set_index("#") → usa el número como etiqueta del renglón. Así la tabla se lee como
+#   una lista del 1 al 8 y no con índices de pandas.
+# .to_string() con print → imprime la tabla completa, sin recortar el texto de ninguna
+#   celda. La salida de pandas normal acorta las columnas largas con puntos suspensivos,
+#   y aquí el texto largo es justamente la evidencia.
+# ? Esta tabla es el índice del cuaderno: cada renglón tiene su celda arriba. Quien
+# ? discuta la cifra puede subir y volver a correr el cálculo que la produjo.
+
+# %% [markdown]
+# ## Lo que este paso deja
+#
+# - **Los ocho defectos, con nombre y con monto.** Cinco salieron en el cuadre del paso 2;
+#   tres no se habrían visto nunca mirando solo los totales.
+# - **La evidencia es conteo, no adjetivo.** Cada renglón dice cuántas filas, cuántos
+#   folios o cuántas líneas, y de dónde salió la cifra.
+# - **El efecto está medido y separado.** Sumar los efectos no da la diferencia del paso
+#   2 y no debe dar: cada uno se mide por su lado, sobre bases distintas, porque se
+#   corrigen en orden y unos pisan a otros.
+# - Hay un defecto que **no cambia un peso del total** y aun así es el más peligroso de
+#   leer mal: el pago aplicado a la factura equivocada. Ahí el dinero no se creó ni se
+#   perdió; cambió de tramo de antigüedad, que es lo que dispara el cobro.
+#
+# Con los datos ya conocidos y sucios por escrito, el **paso 4** deja en claro qué se
+# está suponiendo: la tasa de IVA, el costo único del catálogo, la ventana de doce meses
+# y todo lo que se dio por bueno sin poder comprobarlo. Y qué pasaría si cada uno cambia.

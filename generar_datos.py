@@ -432,8 +432,9 @@ def generar_cartera(rng: random.Random, lineas: list[dict]) -> tuple[list, list]
     return list(facturas.values()), pagos
 
 
-def aplicar_pago_equivocado(rng: random.Random, facturas: dict, pagos: list) -> dict:
-    """Aplica un pago grande a la factura equivocada del mismo cliente."""
+def aplicar_pago_equivocado(rng: random.Random, facturas: dict, pagos: list,
+                            notas: list) -> dict:
+    """Aplica un pago a la factura equivocada del mismo cliente, por el saldo neto."""
     abiertas = [f for f in facturas.values() if f["saldo"] > 0]       # cartera viva
     antiguas = [f for f in abiertas                                   # las vencidas de
                 if (CORTE - f["fecha_vencimiento"]).days > 90          # más de 90 días
@@ -458,13 +459,16 @@ def aplicar_pago_equivocado(rng: random.Random, facturas: dict, pagos: list) -> 
         if (destino["fecha_emision"] - fecha_pago).days > 100:        # demasiado lejos:
             continue                                                 # busca otra víctima
 
+        devuelto = sum(n["importe_con_iva"] for n in notas                # lo que ya se
+                       if n["folio_factura"] == victima["folio"])         # devolvió
+        abono = redondear(victima["saldo"] - devuelto)                    # el saldo neto
         pagos[:] = [p for p in pagos if p["factura"] != destino["folio"]]
         pagos.append({"cliente": destino["cliente"], "factura": destino["folio"],
-                      "fecha_pago": fecha_pago, "importe": victima["importe"]})
-        destino["pagado"] = victima["importe"]                        # el abono cayó aquí
+                      "fecha_pago": fecha_pago, "importe": abono})
+        destino["pagado"] = abono                                       # el abono cayó aquí
         destino["saldo"] = redondear(destino["importe"] - destino["pagado"])
         return {"victima": victima["folio"], "destino": destino["folio"],
-                "importe": victima["importe"], "fecha_pago": fecha_pago,
+                "importe": abono, "fecha_pago": fecha_pago,
                 "emision_destino": destino["fecha_emision"]}
     return {}
 
@@ -790,7 +794,8 @@ def main() -> None:
     lineas = generar_ventas(rng, clientes, productos)
     notas = generar_notas(rng, lineas)
     facturas, pagos = generar_cartera(rng, lineas)
-    equivocado = aplicar_pago_equivocado(rng, {f["folio"]: f for f in facturas}, pagos)
+    equivocado = aplicar_pago_equivocado(rng, {f["folio"]: f for f in facturas},
+                                         pagos, notas)
     filas = ensuciar_ventas(rng, lineas)
 
     escribir_csv(RUTA_RECIBIDO / "ventas_12_meses.csv", COLUMNAS_VENTAS, filas)
