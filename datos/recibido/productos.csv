@@ -1,0 +1,121 @@
+﻿codigo,nombre,categoria,unidad,costo_actual,precio_lista_sin_iva
+P-0001,Aceite vegetal Cerro Prieto 900 ml,Abarrotes,botella,33.25,39.77
+P-0002,Aceite vegetal Cerro Prieto 1 L,Abarrotes,botella,63.81,73.86
+P-0003,Aceite vegetal Cerro Prieto 3 L,Abarrotes,botella,152.21,184.58
+P-0004,Aceite vegetal Cerro Prieto 5 L,Abarrotes,botella,310.88,374.39
+P-0005,Aceite vegetal Cerro Prieto 20 L,Abarrotes,botella,716.72,864.67
+P-0006,Arroz Doña Filo 1 kg,Abarrotes,bolsa,21.86,25.18
+P-0007,Arroz Doña Filo 2 kg,Abarrotes,bolsa,41.8,48.62
+P-0008,Arroz Doña Filo 5 kg,Abarrotes,bolsa,101.54,118.94
+P-0009,Arroz Doña Filo 10 kg,Abarrotes,bolsa,195.05,239.08
+P-0010,Arroz Doña Filo 25 kg,Abarrotes,bolsa,472.76,574.9
+P-0011,Azúcar estándar Río Claro 1 kg,Abarrotes,bolsa,23.69,27.33
+P-0012,Azúcar estándar Río Claro 2 kg,Abarrotes,bolsa,45.5,54.59
+P-0013,Azúcar estándar Río Claro 5 kg,Abarrotes,bolsa,109.23,107.04
+P-0014,Azúcar estándar Río Claro 10 kg,Abarrotes,bolsa,211.18,260.31
+P-0015,Azúcar estándar Río Claro 25 kg,Abarrotes,bolsa,507.52,594.66
+P-0016,Frijol negro Monte Alto 1 kg,Abarrotes,bolsa,26.37,31.63
+P-0017,Frijol negro Monte Alto 2 kg,Abarrotes,bolsa,49.32,59.42
+P-0018,Frijol negro Monte Alto 5 kg,Abarrotes,bolsa,116.47,141.97
+P-0019,Frijol negro Monte Alto 10 kg,Abarrotes,bolsa,240.42,298.07
+P-0020,Frijol negro Monte Alto 25 kg,Abarrotes,bolsa,560.12,661.13
+P-0021,Lenteja La Troje 500 g,Abarrotes,bolsa,18.38,21.4
+P-0022,Lenteja La Troje 1 kg,Abarrotes,bolsa,33.3,40.84
+P-0023,Lenteja La Troje 2 kg,Abarrotes,bolsa,80.52,96.42
+P-0024,Lenteja La Troje 5 kg,Abarrotes,bolsa,163.58,201.81
+P-0025,Lenteja La Troje 10 kg,Abarrotes,bolsa,382.33,443.34
+P-0026,Pasta para sopa Sol de Mayo 200 g,Abarrotes,paquete,12.04,14.84
+P-0027,Pasta para sopa Sol de Mayo 500 g,Abarrotes,paquete,22.95,22.05
+P-0028,Pasta para sopa Sol de Mayo 1 kg,Abarrotes,paquete,54.23,62.39
+P-0029,Pasta para sopa Sol de Mayo 3 kg,Abarrotes,paquete,107.33,123.52
+P-0030,Pasta para sopa Sol de Mayo 5 kg,Abarrotes,paquete,254.4,306.92
+P-0031,Harina de maíz Agua Nueva 1 kg,Abarrotes,bolsa,19.61,22.7
+P-0032,Harina de maíz Agua Nueva 2 kg,Abarrotes,bolsa,38.14,44.9
+P-0033,Harina de maíz Agua Nueva 5 kg,Abarrotes,bolsa,92.25,108.02
+P-0034,Harina de maíz Agua Nueva 10 kg,Abarrotes,bolsa,177.32,213.45
+P-0035,Harina de maíz Agua Nueva 20 kg,Abarrotes,bolsa,411.07,469.56
+P-0036,Sal de mesa El Nopalito 1 kg,Abarrotes,bolsa,8.92,10.61
+P-0037,Sal de mesa El Nopalito 2 kg,Abarrotes,bolsa,17.11,21.15
+P-0038,Sal de mesa El Nopalito 5 kg,Abarrotes,bolsa,40.9,50.34
+P-0039,Sal de mesa El Nopalito 10 kg,Abarrotes,bolsa,81.6,99.89
+P-0040,Sal de mesa El Nopalito 25 kg,Abarrotes,bolsa,186.58,229.3
+P-0041,Atún en agua Rancho Viejo 140 g,Abarrotes,lata,16.62,20.27
+P-0042,Atún en agua Rancho Viejo 170 g,Abarrotes,lata,32.01,37.51
+P-0043,Atún en agua Rancho Viejo 200 g,Abarrotes,lata,75.89,89.29
+P-0044,Atún en agua Rancho Viejo 300 g,Abarrotes,lata,153.96,176.14
+P-0045,Atún en agua Rancho Viejo 500 g,Abarrotes,lata,356.8,427.05
+P-0046,Sardina en tomate Piedra Blanca 155 g,Abarrotes,lata,14.36,16.89
+P-0047,Sardina en tomate Piedra Blanca 200 g,Abarrotes,lata,27.15,33.67
+P-0048,Sardina en tomate Piedra Blanca 300 g,Abarrotes,lata,66.08,77.17
+P-0049,Sardina en tomate Piedra Blanca 400 g,Abarrotes,lata,125.41,146.3
+P-0050,Sardina en tomate Piedra Blanca 500 g,Abarrotes,lata,299.24,356.99
+P-0051,Café molido Cerro Prieto 250 g,Abarrotes,paquete,58.77,70.75
+P-0052,Café molido Cerro Prieto 500 g,Abarrotes,paquete,113.03,136.72
+P-0053,Café molido Cerro Prieto 1 kg,Abarrotes,paquete,267.18,312.38
+P-0054,Café molido Cerro Prieto 2 kg,Abarrotes,paquete,518.51,640.62
+P-0055,Café molido Cerro Prieto 5 kg,Abarrotes,paquete,1234.76,1413.62
+P-0056,Chocolate en polvo Doña Filo 400 g,Abarrotes,caja,43.82,51.97
+P-0057,Chocolate en polvo Doña Filo 800 g,Abarrotes,caja,81.36,99.9
+P-0058,Chocolate en polvo Doña Filo 1 kg,Abarrotes,caja,197.8,230.82
+P-0059,Chocolate en polvo Doña Filo 2 kg,Abarrotes,caja,388.14,473.9
+P-0060,Chocolate en polvo Doña Filo 5 kg,Abarrotes,caja,949.97,1106.55
+P-0061,Galletas Marías Río Claro 170 g,Abarrotes,paquete,12.8,12.42
+P-0062,Galletas Marías Río Claro 350 g,Abarrotes,paquete,25.44,30.35
+P-0063,Galletas Marías Río Claro 500 g,Abarrotes,paquete,61.56,75.85
+P-0064,Galletas Marías Río Claro 1 kg,Abarrotes,paquete,116.44,137.93
+P-0065,Galletas Marías Río Claro 2 kg,Abarrotes,paquete,268.75,323.3
+P-0066,Cereal de maíz Monte Alto 250 g,Abarrotes,caja,27.37,33.13
+P-0067,Cereal de maíz Monte Alto 400 g,Abarrotes,caja,50.52,59.03
+P-0068,Cereal de maíz Monte Alto 600 g,Abarrotes,caja,122.45,142.1
+P-0069,Cereal de maíz Monte Alto 1 kg,Abarrotes,caja,239.45,291.25
+P-0070,Cereal de maíz Monte Alto 2 kg,Abarrotes,caja,553.57,663.02
+P-0071,Jabón de barra La Troje 150 g,Limpieza,pieza,9.74,13.05
+P-0072,Jabón de barra La Troje 200 g,Limpieza,pieza,18.2,22.36
+P-0073,Jabón de barra La Troje 300 g,Limpieza,pieza,43.93,54.38
+P-0074,Jabón de barra La Troje 400 g,Limpieza,pieza,87.34,111.21
+P-0075,Jabón de barra La Troje 500 g,Limpieza,pieza,203.12,245.68
+P-0076,Detergente en polvo Sol de Mayo 500 g,Limpieza,bolsa,22.4,29.53
+P-0077,Detergente en polvo Sol de Mayo 1 kg,Limpieza,bolsa,41.08,53.52
+P-0078,Detergente en polvo Sol de Mayo 2 kg,Limpieza,bolsa,100.08,131.62
+P-0079,Detergente en polvo Sol de Mayo 5 kg,Limpieza,bolsa,199.63,248.32
+P-0080,Detergente en polvo Sol de Mayo 10 kg,Limpieza,bolsa,472.09,610.27
+P-0081,Suavizante de telas Agua Nueva 850 ml,Limpieza,botella,25.27,30.55
+P-0082,Suavizante de telas Agua Nueva 1 L,Limpieza,botella,49.72,64.44
+P-0083,Suavizante de telas Agua Nueva 2 L,Limpieza,botella,116.22,143.05
+P-0084,Suavizante de telas Agua Nueva 3 L,Limpieza,botella,234.98,296.6
+P-0085,Suavizante de telas Agua Nueva 5 L,Limpieza,botella,552.05,665.7
+P-0086,Blanqueador El Nopalito 950 ml,Limpieza,botella,17.91,21.53
+P-0087,Blanqueador El Nopalito 1 L,Limpieza,botella,34.62,43.02
+P-0088,Blanqueador El Nopalito 2 L,Limpieza,botella,84.36,102.41
+P-0089,Blanqueador El Nopalito 4 L,Limpieza,botella,157.92,206.03
+P-0090,Blanqueador El Nopalito 10 L,Limpieza,botella,385.0,507.94
+P-0091,Limpiador líquido Rancho Viejo 900 ml,Limpieza,botella,21.44,28.51
+P-0092,Limpiador líquido Rancho Viejo 1 L,Limpieza,botella,40.24,49.02
+P-0093,Limpiador líquido Rancho Viejo 2 L,Limpieza,botella,98.31,127.23
+P-0094,Limpiador líquido Rancho Viejo 4 L,Limpieza,botella,193.8,234.12
+P-0095,Limpiador líquido Rancho Viejo 10 L,Limpieza,botella,453.01,560.4
+P-0096,Jabón líquido para trastes Piedra Blanca 500 ml,Limpieza,botella,23.92,29.81
+P-0097,Jabón líquido para trastes Piedra Blanca 750 ml,Limpieza,botella,46.4,59.84
+P-0098,Jabón líquido para trastes Piedra Blanca 1 L,Limpieza,botella,110.42,143.13
+P-0099,Jabón líquido para trastes Piedra Blanca 2 L,Limpieza,botella,221.05,288.89
+P-0100,Jabón líquido para trastes Piedra Blanca 5 L,Limpieza,botella,505.52,648.09
+P-0101,Bolsa para basura Cerro Prieto 10 pzas,Limpieza,paquete,15.93,20.69
+P-0102,Bolsa para basura Cerro Prieto 20 pzas,Limpieza,paquete,30.23,36.37
+P-0103,Bolsa para basura Cerro Prieto 50 pzas,Limpieza,paquete,72.65,96.19
+P-0104,Bolsa para basura Cerro Prieto 100 pzas,Limpieza,paquete,146.08,182.44
+P-0105,Bolsa para basura Cerro Prieto 200 pzas,Limpieza,paquete,336.77,430.06
+P-0106,Papel higiénico Doña Filo 4 rollos,Limpieza,paquete,28.59,37.07
+P-0107,Papel higiénico Doña Filo 12 rollos,Limpieza,paquete,54.17,65.27
+P-0108,Papel higiénico Doña Filo 24 rollos,Limpieza,paquete,125.69,162.57
+P-0109,Papel higiénico Doña Filo 48 rollos,Limpieza,paquete,249.02,323.07
+P-0110,Papel higiénico Doña Filo 96 rollos,Limpieza,paquete,601.91,735.34
+P-0111,Servilletas Río Claro 100 pzas,Limpieza,paquete,15.43,19.37
+P-0112,Servilletas Río Claro 250 pzas,Limpieza,paquete,27.79,33.58
+P-0113,Servilletas Río Claro 500 pzas,Limpieza,paquete,67.65,63.31
+P-0114,Servilletas Río Claro 1000 pzas,Limpieza,paquete,133.75,168.18
+P-0115,Servilletas Río Claro 2000 pzas,Limpieza,paquete,323.42,417.1
+P-0116,Toallas de papel Monte Alto 2 rollos,Limpieza,paquete,18.48,23.92
+P-0117,Toallas de papel Monte Alto 4 rollos,Limpieza,paquete,35.13,43.59
+P-0118,Toallas de papel Monte Alto 6 rollos,Limpieza,paquete,87.16,107.34
+P-0119,Toallas de papel Monte Alto 12 rollos,Limpieza,paquete,170.12,226.25
+P-0120,Toallas de papel Monte Alto 24 rollos,Limpieza,paquete,405.4,490.23

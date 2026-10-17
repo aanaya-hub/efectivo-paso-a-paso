@@ -1,0 +1,8 @@
+# Versiones con las que se construyó y verificó el cuaderno.
+# Python 3.13.11
+pandas==2.3.3
+numpy==2.3.5
+matplotlib==3.10.7
+nbformat==5.10.4
+nbclient==0.10.4
+ipykernel==7.2.0

@@ -1,0 +1,121 @@
+﻿producto_codigo,producto_nombre,existencia,fecha_corte,costo_unitario
+P-0001,Aceite vegetal Cerro Prieto 900 ml,289,2026-06-30,33.25
+P-0002,Aceite vegetal Cerro Prieto 1 L,104,2026-06-30,63.81
+P-0003,Aceite vegetal Cerro Prieto 3 L,162,2026-06-30,152.21
+P-0004,Aceite vegetal Cerro Prieto 5 L,130,2026-06-30,310.88
+P-0005,Aceite vegetal Cerro Prieto 20 L,133,2026-06-30,716.72
+P-0006,Arroz Doña Filo 1 kg,944,2026-06-30,21.86
+P-0007,Arroz Doña Filo 2 kg,152,2026-06-30,41.8
+P-0008,Arroz Doña Filo 5 kg,268,2026-06-30,101.54
+P-0009,Arroz Doña Filo 10 kg,81,2026-06-30,195.05
+P-0010,Arroz Doña Filo 25 kg,51,2026-06-30,472.76
+P-0011,Azúcar estándar Río Claro 1 kg,599,2026-06-30,23.69
+P-0012,Azúcar estándar Río Claro 2 kg,594,2026-06-30,45.5
+P-0013,Azúcar estándar Río Claro 5 kg,238,2026-06-30,109.23
+P-0014,Azúcar estándar Río Claro 10 kg,37,2026-06-30,211.18
+P-0015,Azúcar estándar Río Claro 25 kg,76,2026-06-30,507.52
+P-0016,Frijol negro Monte Alto 1 kg,970,2026-06-30,26.37
+P-0017,Frijol negro Monte Alto 2 kg,21,2026-06-30,49.32
+P-0018,Frijol negro Monte Alto 5 kg,135,2026-06-30,116.47
+P-0019,Frijol negro Monte Alto 10 kg,233,2026-06-30,240.42
+P-0020,Frijol negro Monte Alto 25 kg,31,2026-06-30,560.12
+P-0021,Lenteja La Troje 500 g,1009,2026-06-30,18.38
+P-0022,Lenteja La Troje 1 kg,261,2026-06-30,33.3
+P-0023,Lenteja La Troje 2 kg,108,2026-06-30,80.52
+P-0024,Lenteja La Troje 5 kg,192,2026-06-30,163.58
+P-0025,Lenteja La Troje 10 kg,37,2026-06-30,382.33
+P-0026,Pasta para sopa Sol de Mayo 200 g,998,2026-06-30,12.04
+P-0027,Pasta para sopa Sol de Mayo 500 g,2208,2026-06-30,22.95
+P-0028,Pasta para sopa Sol de Mayo 1 kg,164,2026-06-30,54.23
+P-0029,Pasta para sopa Sol de Mayo 3 kg,480,2026-06-30,107.33
+P-0030,Pasta para sopa Sol de Mayo 5 kg,362,2026-06-30,254.4
+P-0031,Harina de maíz Agua Nueva 1 kg,573,2026-06-30,19.61
+P-0032,Harina de maíz Agua Nueva 2 kg,163,2026-06-30,38.14
+P-0033,Harina de maíz Agua Nueva 5 kg,58,2026-06-30,92.25
+P-0034,Harina de maíz Agua Nueva 10 kg,287,2026-06-30,177.32
+P-0035,Harina de maíz Agua Nueva 20 kg,220,2026-06-30,411.07
+P-0036,Sal de mesa El Nopalito 1 kg,1394,2026-06-30,8.92
+P-0037,Sal de mesa El Nopalito 2 kg,281,2026-06-30,17.11
+P-0038,Sal de mesa El Nopalito 5 kg,23,2026-06-30,40.9
+P-0039,Sal de mesa El Nopalito 10 kg,476,2026-06-30,81.6
+P-0040,Sal de mesa El Nopalito 25 kg,416,2026-06-30,186.58
+P-0041,Atún en agua Rancho Viejo 140 g,1012,2026-06-30,16.62
+P-0042,Atún en agua Rancho Viejo 170 g,220,2026-06-30,32.01
+P-0043,Atún en agua Rancho Viejo 200 g,284,2026-06-30,75.89
+P-0044,Atún en agua Rancho Viejo 300 g,132,2026-06-30,153.96
+P-0045,Atún en agua Rancho Viejo 500 g,212,2026-06-30,356.8
+P-0046,Sardina en tomate Piedra Blanca 155 g,2186,2026-06-30,14.36
+P-0047,Sardina en tomate Piedra Blanca 200 g,553,2026-06-30,27.15
+P-0048,Sardina en tomate Piedra Blanca 300 g,74,2026-06-30,66.08
+P-0049,Sardina en tomate Piedra Blanca 400 g,88,2026-06-30,125.41
+P-0050,Sardina en tomate Piedra Blanca 500 g,159,2026-06-30,299.24
+P-0051,Café molido Cerro Prieto 250 g,218,2026-06-30,58.77
+P-0052,Café molido Cerro Prieto 500 g,38,2026-06-30,113.03
+P-0053,Café molido Cerro Prieto 1 kg,74,2026-06-30,267.18
+P-0054,Café molido Cerro Prieto 2 kg,36,2026-06-30,518.51
+P-0055,Café molido Cerro Prieto 5 kg,22,2026-06-30,1234.76
+P-0056,Chocolate en polvo Doña Filo 400 g,99,2026-06-30,43.82
+P-0057,Chocolate en polvo Doña Filo 800 g,197,2026-06-30,81.36
+P-0058,Chocolate en polvo Doña Filo 1 kg,88,2026-06-30,197.8
+P-0059,Chocolate en polvo Doña Filo 2 kg,97,2026-06-30,388.14
+P-0060,Chocolate en polvo Doña Filo 5 kg,81,2026-06-30,949.97
+P-0061,Galletas Marías Río Claro 170 g,1841,2026-06-30,12.8
+P-0062,Galletas Marías Río Claro 350 g,16,2026-06-30,25.44
+P-0063,Galletas Marías Río Claro 500 g,129,2026-06-30,61.56
+P-0064,Galletas Marías Río Claro 1 kg,84,2026-06-30,116.44
+P-0065,Galletas Marías Río Claro 2 kg,149,2026-06-30,268.75
+P-0066,Cereal de maíz Monte Alto 250 g,40,2026-06-30,27.37
+P-0067,Cereal de maíz Monte Alto 400 g,41,2026-06-30,50.52
+P-0068,Cereal de maíz Monte Alto 600 g,164,2026-06-30,122.45
+P-0069,Cereal de maíz Monte Alto 1 kg,13,2026-06-30,239.45
+P-0070,Cereal de maíz Monte Alto 2 kg,70,2026-06-30,553.57
+P-0071,Jabón de barra La Troje 150 g,1353,2026-06-30,9.74
+P-0072,Jabón de barra La Troje 200 g,446,2026-06-30,18.2
+P-0073,Jabón de barra La Troje 300 g,129,2026-06-30,43.93
+P-0074,Jabón de barra La Troje 400 g,362,2026-06-30,87.34
+P-0075,Jabón de barra La Troje 500 g,113,2026-06-30,203.12
+P-0076,Detergente en polvo Sol de Mayo 500 g,912,2026-06-30,22.4
+P-0077,Detergente en polvo Sol de Mayo 1 kg,365,2026-06-30,41.08
+P-0078,Detergente en polvo Sol de Mayo 2 kg,31,2026-06-30,100.08
+P-0079,Detergente en polvo Sol de Mayo 5 kg,28,2026-06-30,199.63
+P-0080,Detergente en polvo Sol de Mayo 10 kg,352,2026-06-30,472.09
+P-0081,Suavizante de telas Agua Nueva 850 ml,748,2026-06-30,25.27
+P-0082,Suavizante de telas Agua Nueva 1 L,84,2026-06-30,49.72
+P-0083,Suavizante de telas Agua Nueva 2 L,106,2026-06-30,116.22
+P-0084,Suavizante de telas Agua Nueva 3 L,195,2026-06-30,234.98
+P-0085,Suavizante de telas Agua Nueva 5 L,14,2026-06-30,552.05
+P-0086,Blanqueador El Nopalito 950 ml,1289,2026-06-30,17.91
+P-0087,Blanqueador El Nopalito 1 L,255,2026-06-30,34.62
+P-0088,Blanqueador El Nopalito 2 L,366,2026-06-30,84.36
+P-0089,Blanqueador El Nopalito 4 L,83,2026-06-30,157.92
+P-0090,Blanqueador El Nopalito 10 L,99,2026-06-30,385.0
+P-0091,Limpiador líquido Rancho Viejo 900 ml,658,2026-06-30,21.44
+P-0092,Limpiador líquido Rancho Viejo 1 L,191,2026-06-30,40.24
+P-0093,Limpiador líquido Rancho Viejo 2 L,36,2026-06-30,98.31
+P-0094,Limpiador líquido Rancho Viejo 4 L,83,2026-06-30,193.8
+P-0095,Limpiador líquido Rancho Viejo 10 L,84,2026-06-30,453.01
+P-0096,Jabón líquido para trastes Piedra Blanca 500 ml,544,2026-06-30,23.92
+P-0097,Jabón líquido para trastes Piedra Blanca 750 ml,70,2026-06-30,46.4
+P-0098,Jabón líquido para trastes Piedra Blanca 1 L,29,2026-06-30,110.42
+P-0099,Jabón líquido para trastes Piedra Blanca 2 L,66,2026-06-30,221.05
+P-0100,Jabón líquido para trastes Piedra Blanca 5 L,44,2026-06-30,505.52
+P-0101,Bolsa para basura Cerro Prieto 10 pzas,1464,2026-06-30,15.93
+P-0102,Bolsa para basura Cerro Prieto 20 pzas,24,2026-06-30,30.23
+P-0103,Bolsa para basura Cerro Prieto 50 pzas,53,2026-06-30,72.65
+P-0104,Bolsa para basura Cerro Prieto 100 pzas,170,2026-06-30,146.08
+P-0105,Bolsa para basura Cerro Prieto 200 pzas,107,2026-06-30,336.77
+P-0106,Papel higiénico Doña Filo 4 rollos,369,2026-06-30,28.59
+P-0107,Papel higiénico Doña Filo 12 rollos,152,2026-06-30,54.17
+P-0108,Papel higiénico Doña Filo 24 rollos,54,2026-06-30,125.69
+P-0109,Papel higiénico Doña Filo 48 rollos,150,2026-06-30,249.02
+P-0110,Papel higiénico Doña Filo 96 rollos,100,2026-06-30,601.91
+P-0111,Servilletas Río Claro 100 pzas,1096,2026-06-30,15.43
+P-0112,Servilletas Río Claro 250 pzas,73,2026-06-30,27.79
+P-0113,Servilletas Río Claro 500 pzas,611,2026-06-30,67.65
+P-0114,Servilletas Río Claro 1000 pzas,96,2026-06-30,133.75
+P-0115,Servilletas Río Claro 2000 pzas,97,2026-06-30,323.42
+P-0116,Toallas de papel Monte Alto 2 rollos,1190,2026-06-30,18.48
+P-0117,Toallas de papel Monte Alto 4 rollos,221,2026-06-30,35.13
+P-0118,Toallas de papel Monte Alto 6 rollos,110,2026-06-30,87.16
+P-0119,Toallas de papel Monte Alto 12 rollos,90,2026-06-30,170.12
+P-0120,Toallas de papel Monte Alto 24 rollos,81,2026-06-30,405.4

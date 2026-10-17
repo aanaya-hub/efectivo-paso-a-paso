@@ -1,0 +1,8 @@
+# Notas de trabajo internas: no se publican.
+BRIEF.md
+
+# Basura de Python y de Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store

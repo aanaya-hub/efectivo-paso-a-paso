@@ -1,0 +1,181 @@
+﻿codigo,nombre,rfc,tipo,ciudad,fecha_alta,credito_dias,vendedor
+C-0001,Fonda La Estación,FON9405013T7,Menudeo,Guadalajara,2020-05-01,30,V-03
+C-0002,Depósito El Salto,DEP780272LCL,Menudeo,El Salto,2021-02-01,30,V-03
+C-0003,Comercializadora San Blas,COM1708485EY,Mayoreo,Tlaquepaque,2019-08-01,60,V-01
+C-0004,Abarrotes El Faro,ABA610756ZEL,Mayoreo,Zapotlanejo,2024-04-01,60,V-02
+C-0005,Mini súper La Yesca,MIN700506EKA,Menudeo,Guadalajara,2017-03-01,30,V-03
+C-0006,Tienda El Mirador,TIE501116BAZ,Mayoreo,Guadalajara,2023-12-01,60,V-01
+C-0007,Miscelánea La Esquina,MIS040463HCK,Mayoreo,Chapala,2025-05-01,60,V-01
+C-0008,Depósito Las Juntas,DEP760602BS0,Mayoreo,Tonalá,2016-11-01,30,V-01
+C-0009,Tienda La Calera,TIE841033P2K,Mayoreo,Tonalá,2022-10-01,90,V-03
+C-0010,Cocina económica El Pueblito,COC490999BQE,Menudeo,Guadalajara,2017-08-01,30,V-02
+C-0011,Bodega Las Trojes,BOD2611118GD,Menudeo,Guadalajara,2020-06-01,30,V-01
+C-0012,Comercializadora La Viga,COM170503VKD,Mayoreo,Guadalajara,2025-07-01,30,V-01
+C-0013,Abarrotes El Salto,ABA26054515S,Mayoreo,Chapala,2018-10-01,90,V-02
+C-0014,Fonda La Cima,FON930277QF5,Menudeo,El Salto,2023-11-01,30,V-02
+C-0015,Depósito La Esquina,DEP370578P14,Mayoreo,Zapopan,2015-03-01,90,V-02
+C-0016,Autoservicio La Cima,AUT660720PJP,Menudeo,Chapala,2025-08-01,30,V-02
+C-0017,Bodega El Trapiche,BOD371002CYK,Menudeo,Zapopan,2023-02-01,60,V-03
+C-0018,Comercializadora Los Arcos,COM101036JMS,Menudeo,Guadalajara,2024-02-01,30,V-01
+C-0019,Cocina económica San Pedro,COC540136JQ7,Mayoreo,Zapopan,2025-06-01,30,V-02
+C-0020,Abarrotes El Puente,ABA320122DTG,Menudeo,Juanacatlán,2017-01-01,30,V-02
+C-0021,Fonda Los Naranjos,FON4102860DQ,Menudeo,Zapopan,2024-09-01,30,V-01
+C-0022,Comercializadora Las Juntas,COM650272EDU,Mayoreo,Guadalajara,2018-02-01,30,V-01
+C-0023,Comercializadora La Cima,COM970380Y3X,Mayoreo,Guadalajara,2016-07-01,60,V-02
+C-0024,Tienda Las Ánimas,TIE670646M2C,Mayoreo,Tlaquepaque,2015-07-01,60,V-03
+C-0025,Abarrotes Los Arcos,ABA2402034LK,Menudeo,Guadalajara,2023-04-01,30,V-01
+C-0026,Depósito Santa Rita,DEP280140P12,Mayoreo,Zapopan,2016-06-01,60,V-02
+C-0027,Fonda El Roble,FON120927CQR,Menudeo,Zapopan,2016-05-01,60,V-01
+C-0028,Tienda El Puente,TIE681198ZMV,Menudeo,Zapotlanejo,2025-03-01,30,V-02
+C-0029,Cocina económica El Roble,COC3004152HW,Mayoreo,Tonalá,2024-02-01,60,V-02
+C-0030,Fonda Los Tarascos,FON210644TR2,Menudeo,Zapopan,2025-10-01,30,V-02
+C-0031,Autoservicio Los Sauces,AUT580644X8G,Menudeo,Guadalajara,2024-04-01,30,V-03
+C-0032,Cocina económica La Yesca,COC0403535SN,Mayoreo,Zapopan,2020-07-01,60,V-02
+C-0033,Fonda Las Flores,FON160615A9F,Menudeo,Zapopan,2015-02-01,30,V-01
+C-0034,Bodega San Judas,BOD850927VB8,Mayoreo,Guadalajara,2025-01-01,30,V-01
+C-0035,Cocina económica La Estación,COC571083D1T,Menudeo,Juanacatlán,2020-09-01,30,V-03
+C-0036,Cocina económica Santa Rita,COC821083TMD,Menudeo,Zapopan,2018-07-01,60,V-01
+C-0037,Depósito La Gloria,DEP1212841GC,Mayoreo,Guadalajara,2015-02-01,90,V-01
+C-0038,Fonda La Gloria,FON310462KFH,Mayoreo,Zapopan,2018-08-01,90,V-03
+C-0039,Comercializadora El Chorrito,COM580213Q6M,Mayoreo,El Salto,2022-06-01,30,V-02
+C-0040,Autoservicio El Crucero,AUT210215M11,Mayoreo,Guadalajara,2017-08-01,90,V-01
+C-0041,Mini súper La Calera,MIN510241ZE0,Mayoreo,Tonalá,2023-12-01,30,V-02
+C-0042,Cocina económica Los Arcos,COC960536S9M,Menudeo,Tlajomulco,2019-03-01,30,V-01
+C-0043,Cocina económica La Loma,COC671288FXR,Menudeo,Juanacatlán,2024-08-01,30,V-02
+C-0044,Mini súper Las Trojes,MIN30084486G,Mayoreo,Zapopan,2016-01-01,90,V-02
+C-0045,Bodega El Mirador,BOD411177943,Mayoreo,Zapopan,2020-03-01,90,V-01
+C-0046,Miscelánea La Estación,MIS99040287P,Mayoreo,Guadalajara,2020-08-01,30,V-02
+C-0047,Miscelánea Las Trojes,MIS68030934Y,Mayoreo,Guadalajara,2022-06-01,90,V-01
+C-0048,Miscelánea El Salto,MIS810318HY4,Menudeo,Chapala,2015-10-01,30,V-01
+C-0049,Autoservicio Los Arcos,AUT720247GLZ,Mayoreo,Zapopan,2018-11-01,30,V-03
+C-0050,Fonda El Puente,FON821144UDC,Menudeo,Tlaquepaque,2022-06-01,30,V-01
+C-0051,Comercializadora Las Flores,COM2801777DK,Menudeo,Guadalajara,2019-10-01,30,V-01
+C-0052,Cocina económica El Trapiche,COC930132NHW,Mayoreo,Zapopan,2025-11-01,30,V-02
+C-0053,Miscelánea Los Pinos,MIS571278JPU,Mayoreo,Zapopan,2020-02-01,60,V-02
+C-0054,Depósito La Viga,DEP451178T5X,Menudeo,Zapopan,2019-08-01,30,V-02
+C-0055,Depósito La Yesca,DEP870799J9C,Menudeo,Zapopan,2019-09-01,30,V-03
+C-0056,Autoservicio Las Juntas,AUT390750ZCF,Mayoreo,Guadalajara,2015-04-01,30,V-02
+C-0057,Comercializadora El Crucero,COM800983SNZ,Menudeo,Juanacatlán,2024-12-01,30,V-03
+C-0058,Autoservicio El Puente,AUT580206TPX,Menudeo,Juanacatlán,2023-11-01,30,V-01
+C-0059,Autoservicio La Aurora,AUT710769X38,Mayoreo,Tlaquepaque,2022-12-01,30,V-01
+C-0060,Mini súper La Gloria,MIN871030S88,Mayoreo,Chapala,2019-06-01,30,V-03
+C-0061,Comercializadora El Pueblito,COM930907HYC,Mayoreo,Zapopan,2018-07-01,60,V-01
+C-0062,Fonda San Pedro,FON160902YVH,Menudeo,Tlajomulco,2016-05-01,30,V-01
+C-0063,Mini súper El Roble,MIN470684RY7,Menudeo,Zapotlanejo,2020-11-01,30,V-01
+C-0064,Mini súper Los Fresnos,MIN711151KF3,Menudeo,Tlaquepaque,2018-02-01,30,V-03
+C-0065,Tienda Los Tarascos,TIE420592S34,Mayoreo,Zapopan,2019-02-01,30,V-02
+C-0066,Tienda La Aurora,TIE4707585D1,Mayoreo,Zapopan,2023-09-01,60,V-03
+C-0067,Depósito Los Pinos,DEP101172EU3,Menudeo,Tonalá,2015-06-01,30,V-01
+C-0068,Fonda Los Sauces,FON04060316G,Menudeo,Tlajomulco,2018-09-01,30,V-02
+C-0069,Autoservicio El Chorrito,AUT3111509ZP,Menudeo,Zapopan,2024-12-01,30,V-01
+C-0070,Miscelánea Las Juntas,MIS590564RDL,Mayoreo,Guadalajara,2025-10-01,30,V-02
+C-0071,Cocina económica Los Tarascos,COC351209W1F,Menudeo,Tonalá,2015-09-01,30,V-03
+C-0072,Cocina económica La Noria,COC4701527K0,Mayoreo,Zapopan,2019-08-01,90,V-01
+C-0073,Bodega El Ancla,BOD530981HNJ,Menudeo,Tonalá,2022-09-01,30,V-02
+C-0074,Tienda El Roble,TIE380768S68,Mayoreo,Guadalajara,2023-07-01,30,V-01
+C-0075,Mini súper La Viga,MIN531164L3E,Mayoreo,Tlaquepaque,2020-11-01,30,V-01
+C-0076,Fonda El Ancla,FON700188B8P,Mayoreo,Zapopan,2022-01-01,30,V-02
+C-0077,Fonda Las Trojes,FON21078607Q,Mayoreo,Tonalá,2025-08-01,30,V-01
+C-0078,Autoservicio Los Pinos,AUT670960WAA,Menudeo,El Salto,2021-04-01,30,V-03
+C-0079,Mini súper El Faro,MIN630677MK2,Mayoreo,Zapopan,2019-07-01,30,V-03
+C-0080,Abarrotes La Estación,ABA990275AVJ,Menudeo,Zapopan,2025-01-01,30,V-02
+C-0081,Fonda San Blas,FON980632TA3,Mayoreo,Chapala,2020-07-01,60,V-02
+C-0082,Tienda Las Trojes,TIE470248Z4Q,Menudeo,Tlaquepaque,2022-09-01,30,V-03
+C-0083,Miscelánea El Refugio,MIS581281JW2,Menudeo,Guadalajara,2022-09-01,30,V-03
+C-0084,Depósito Los Sauces,DEP110870VKE,Menudeo,Tlaquepaque,2018-09-01,30,V-03
+C-0085,Cocina económica El Faro,COC400146GY0,Menudeo,Guadalajara,2023-01-01,30,V-01
+C-0086,Mini súper El Pueblito,MIN661121408,Mayoreo,Guadalajara,2025-03-01,30,V-03
+C-0087,Cocina económica La Esquina,COC53077666B,Menudeo,Tonalá,2024-04-01,30,V-03
+C-0088,Fonda La Aurora,FON990263C18,Menudeo,Zapopan,2018-09-01,30,V-01
+C-0089,Miscelánea San Blas,MIS550386LHU,Mayoreo,Guadalajara,2019-02-01,90,V-01
+C-0090,Autoservicio La Noria,AUT740980808,Menudeo,Guadalajara,2024-11-01,30,V-01
+C-0091,Abarrotes Santa Rita,ABA0203818PD,Mayoreo,Zapopan,2019-04-01,30,V-01
+C-0092,Depósito San Pedro,DEP350165H0P,Menudeo,Tonalá,2019-05-01,30,V-01
+C-0093,Abarrotes Los Fresnos,ABA0004812J5,Mayoreo,Ixtlahuacán,2016-08-01,30,V-01
+C-0094,Autoservicio La Estación,AUT980728CQS,Menudeo,Juanacatlán,2015-08-01,30,V-03
+C-0095,Cocina económica Los Sauces,COC900173AY6,Mayoreo,Guadalajara,2017-10-01,30,V-02
+C-0096,Comercializadora La Gloria,COM320502VU2,Menudeo,Ixtlahuacán,2019-03-01,30,V-03
+C-0097,Tienda El Crucero,TIE031058H9S,Menudeo,Guadalajara,2019-03-01,30,V-02
+C-0098,Abarrotes San Judas,ABA190593XYB,Mayoreo,Guadalajara,2025-08-01,30,V-03
+C-0099,Fonda La Loma,FON6501166PC,Menudeo,Guadalajara,2019-09-01,30,V-03
+C-0100,Depósito El Crucero,DEP83083508V,Menudeo,Tonalá,2023-08-01,30,V-01
+C-0101,Comercializadora La Noria,COM860334EKC,Menudeo,Guadalajara,2023-07-01,30,V-01
+C-0102,Comercializadora La Estación,COM151269M7N,Menudeo,Tlajomulco,2020-06-01,30,V-03
+C-0103,Miscelánea El Roble,MIS570494URY,Menudeo,Zapopan,2018-01-01,60,V-02
+C-0104,Miscelánea El Crucero,MIS020712M52,Mayoreo,Tlajomulco,2018-04-01,60,V-02
+C-0105,Bodega La Estación,BOD660283DXU,Mayoreo,Guadalajara,2021-07-01,60,V-02
+C-0106,Cocina económica El Crucero,COC8010567TH,Menudeo,Zapopan,2019-10-01,30,V-01
+C-0107,Comercializadora Los Naranjos,COM090449A9R,Menudeo,Zapopan,2015-06-01,60,V-01
+C-0108,Depósito La Loma,DEP0108813Y4,Menudeo,Tlaquepaque,2018-10-01,60,V-01
+C-0109,Miscelánea Los Sauces,MIS740960Y64,Mayoreo,Tlaquepaque,2020-05-01,30,V-02
+C-0110,Cocina económica El Puente,COC601157P98,Menudeo,Guadalajara,2015-10-01,30,V-01
+C-0111,Miscelánea La Calera,MIS561038WYE,Mayoreo,Tlaquepaque,2022-04-01,60,V-02
+C-0112,Tienda La Cima,TIE1706885D9,Menudeo,Guadalajara,2015-03-01,60,V-02
+C-0113,Miscelánea La Aurora,MIS821079Y8K,Menudeo,El Salto,2016-02-01,30,V-03
+C-0114,Abarrotes La Gloria,ABA2207371KA,Menudeo,Guadalajara,2017-12-01,30,V-03
+C-0115,Tienda Los Pinos,TIE600659DCM,Menudeo,Zapopan,2025-10-01,60,V-01
+C-0116,Depósito Las Ánimas,DEP660883GUB,Mayoreo,Tlaquepaque,2025-05-01,90,V-02
+C-0117,Depósito La Cima,DEP4205050L3,Mayoreo,Ixtlahuacán,2021-01-01,30,V-02
+C-0118,Miscelánea Los Fresnos,MIS300808ELT,Menudeo,Zapotlanejo,2025-05-01,30,V-03
+C-0119,Abarrotes El Chorrito,ABA251114WG6,Mayoreo,Zapopan,2024-12-01,30,V-02
+C-0120,Abarrotes La Cascada,ABA37036903F,Mayoreo,Zapopan,2022-04-01,60,V-02
+C-0121,Autoservicio Los Tarascos,AUT7503542BH,Menudeo,Juanacatlán,2025-02-01,30,V-03
+C-0122,Tienda El Cerrito,TIE220732NKD,Menudeo,Juanacatlán,2018-12-01,30,V-02
+C-0123,Cocina económica La Cascada,COC820124VAG,Mayoreo,El Salto,2020-07-01,30,V-02
+C-0124,Autoservicio San Pedro,AUT621294W0G,Menudeo,Juanacatlán,2016-11-01,30,V-02
+C-0125,Miscelánea El Mirador,MIS750822WV5,Menudeo,Tlaquepaque,2023-02-01,30,V-01
+C-0126,Tienda La Gloria,TIE0010759JW,Menudeo,Guadalajara,2016-10-01,30,V-02
+C-0127,Mini súper Las Flores,MIN680136KE2,Menudeo,Guadalajara,2021-10-01,30,V-03
+C-0128,Miscelánea Los Tarascos,MIS590793GW6,Menudeo,Guadalajara,2018-11-01,30,V-01
+C-0129,Cocina económica El Chorrito,COC61024443M,Mayoreo,Guadalajara,2017-08-01,90,V-02
+C-0130,Mini súper El Refugio,MIN680805S07,Menudeo,Tonalá,2023-12-01,30,V-03
+C-0131,Depósito Las Flores,DEP780446MX2,Menudeo,Tlaquepaque,2019-03-01,30,V-02
+C-0132,Bodega El Refugio,BOD6103643H9,Menudeo,Zapopan,2020-12-01,60,V-02
+C-0133,Autoservicio La Viga,AUT530863EN7,Mayoreo,Tlajomulco,2016-08-01,60,V-01
+C-0134,Mini súper Los Tarascos,MIN240270895,Menudeo,Zapopan,2016-03-01,30,V-02
+C-0135,Cocina económica Las Trojes,COC820785TSZ,Mayoreo,Guadalajara,2019-09-01,60,V-02
+C-0136,Abarrotes San Isidro,ABA7412456P5,Menudeo,Guadalajara,2023-10-01,30,V-02
+C-0137,Fonda El Pueblito,FON1404626US,Mayoreo,Zapopan,2018-10-01,60,V-03
+C-0138,Tienda San Judas,TIE4102657Z7,Menudeo,Zapopan,2022-10-01,30,V-03
+C-0139,Autoservicio Los Fresnos,AUT5010507VS,Menudeo,Guadalajara,2023-03-01,30,V-02
+C-0140,Tienda La Estación,TIE4807272U2,Mayoreo,El Salto,2017-05-01,60,V-03
+C-0141,Comercializadora Los Pinos,COM0103164JD,Menudeo,Tonalá,2019-06-01,30,V-03
+C-0142,Miscelánea Las Flores,MIS001183Y2F,Menudeo,Juanacatlán,2022-01-01,30,V-03
+C-0143,Tienda Los Naranjos,TIE650729LL8,Menudeo,Guadalajara,2020-07-01,30,V-03
+C-0144,Tienda La Esquina,TIE341251GNV,Mayoreo,Zapopan,2018-12-01,30,V-02
+C-0145,Autoservicio La Calera,AUT3909892Z6,Mayoreo,Guadalajara,2019-03-01,30,V-02
+C-0146,Miscelánea Las Palmas,MIS2111100WC,Mayoreo,Zapopan,2023-09-01,30,V-03
+C-0147,Comercializadora El Cerrito,COM5908883K6,Mayoreo,Guadalajara,2021-11-01,30,V-03
+C-0148,Abarrotes San Blas,ABA6106534Y1,Menudeo,Tlaquepaque,2023-08-01,60,V-02
+C-0149,Cocina económica La Cima,COC6605461Z3,Mayoreo,Guadalajara,2024-04-01,30,V-02
+C-0150,Abarrotes La Aurora,ABA980904H1T,Menudeo,Tlaquepaque,2022-08-01,30,V-01
+C-0151,Depósito La Calandria,DEC180607QX3,Mayoreo,Zapopan,2025-02-01,60,V-02
+C-0152,Miscelánea San Pedro,MIS360360QHD,Menudeo,Tonalá,2022-08-01,30,V-02
+C-0153,Depósito El Faro,DEP931291WTN,Menudeo,Guadalajara,2015-04-01,60,V-01
+C-0154,Autoservicio El Trapiche,AUT820790GSV,Mayoreo,Zapopan,2020-10-01,60,V-03
+C-0155,Abarrotes El Crucero,ABA281250DW8,Menudeo,Guadalajara,2023-09-01,30,V-02
+C-0156,Comercializadora San Isidro,COM180743KFW,Menudeo,Guadalajara,2017-03-01,60,V-01
+C-0157,Autoservicio Las Ánimas,AUT771282E0K,Menudeo,Zapopan,2020-04-01,30,V-02
+C-0158,Bodega El Puente,BOD681184E9W,Mayoreo,Zapopan,2018-03-01,90,V-01
+C-0159,Bodega Las Flores,BOD831246GUQ,Mayoreo,Tlaquepaque,2024-09-01,30,V-01
+C-0160,Miscelánea La Yesca,MIS940300HHF,Mayoreo,Tlaquepaque,2024-06-01,30,V-03
+C-0161,Comercializadora San Judas,COM71027125N,Menudeo,Tlajomulco,2020-02-01,30,V-02
+C-0162,Miscelánea La Cascada,MIS141176EED,Menudeo,Tonalá,2024-05-01,30,V-02
+C-0163,Comercializadora La Cascada,COM430104GMJ,Mayoreo,Guadalajara,2016-03-01,30,V-01
+C-0164,Abarrotes El Pueblito,ABA390521MNJ,Mayoreo,Guadalajara,2019-02-01,30,V-01
+C-0165,Fonda La Noria,FON450455QJ1,Mayoreo,Zapopan,2019-12-01,30,V-02
+C-0166,Autoservicio Las Palmas,AUT5612088C5,Menudeo,Guadalajara,2019-02-01,30,V-03
+C-0167,Autoservicio El Mirador,AUT780984Y5K,Mayoreo,Zapopan,2021-07-01,30,V-03
+C-0168,Tienda Los Arcos,TIE1404862AF,Menudeo,Zapopan,2015-11-01,30,V-02
+C-0169,Abarrotes La Esquina,ABA180667S4S,Menudeo,El Salto,2016-06-01,30,V-01
+C-0170,Autoservicio El Pueblito,AUT640484UFH,Mayoreo,Guadalajara,2019-02-01,30,V-03
+C-0171,Cocina económica El Ancla,COC24012202K,Menudeo,Juanacatlán,2016-09-01,60,V-01
+C-0172,Autoservicio La Gloria,AUT690450M5U,Menudeo,Zapopan,2024-06-01,30,V-03
+C-0173,Comercializadora San Pedro,COM120377RE5,Menudeo,Zapotlanejo,2022-08-01,30,V-01
+C-0174,Cocina económica Las Flores,COC95072717V,Menudeo,Guadalajara,2025-04-01,30,V-01
+C-0175,Bodega Las Ánimas,BOD920764JN5,Mayoreo,Juanacatlán,2020-09-01,60,V-02
+C-0176,Fonda El Chorrito,FON4205708UB,Menudeo,Chapala,2021-01-01,30,V-02
+C-0177,Bodega La Yesca,BOD900263M87,Mayoreo,Guadalajara,2015-06-01,60,V-01
+C-0178,Mini súper Las Palmas,MIN840224M8J,Mayoreo,Zapopan,2025-11-01,30,V-03
+C-0179,Mini súper Las Juntas,MIN361081EPE,Menudeo,Zapopan,2023-03-01,30,V-03
+C-0180,Depósito La Calandria,DEC180607QX3,Mayoreo,Zapopan,2020-03-01,90,V-03
