@@ -42,7 +42,7 @@
 # semilla fija: dos corridas dan exactamente lo mismo.
 
 # %% [markdown]
-# ## Paso 1 · Lo que pedí y lo que llegó
+# # Paso 1 · Lo que pedí y lo que llegó
 #
 # Antes de tocar un número, la lista de lo que pedí y el cotejo contra lo que de
 # verdad llegó. Responde la primera pregunta que hace un dueño: **«¿qué me va a
@@ -638,7 +638,7 @@ cobertura
 # números no coinciden, no se avanza hasta saber por qué.
 
 # %% [markdown]
-# ## Paso 2 · Perfilado y validación contra los totales
+# # Paso 2 · Perfilado y validación contra los totales
 #
 # Aquí se abre el archivo de ventas y se cuenta lo que hay: cuántos registros, en qué
 # periodo, con qué granularidad, qué falta y qué se repite. Después se suma todo y se
@@ -1136,7 +1136,7 @@ mensual
 # se dedica a cada defecto por separado: qué se encontró, con qué evidencia, qué se
 # decidió y cuánto dinero mueve cada uno.
 # %% [markdown]
-# ## Paso 3 · Registro de defectos
+# # Paso 3 · Registro de defectos
 #
 # El cuadre del paso 2 dice que el total cierra. Eso no dice que los datos estén
 # limpios: cuatro de los ocho defectos no movieron ni un peso del total y aun así
@@ -1493,7 +1493,7 @@ print(registro.set_index("#").to_string())
 # está suponiendo: la tasa de IVA, el costo único del catálogo, la ventana de doce meses
 # y todo lo que se dio por bueno sin poder comprobarlo. Y qué pasaría si cada uno cambia.
 # %% [markdown]
-# ## Paso 4 · Supuestos declarados
+# # Paso 4 · Supuestos declarados
 #
 # Todo análisis supone cosas. La diferencia entre uno honesto y uno que no lo es no está
 # en no suponer: está en **decirlo y medir cuánto pesa**. Este paso pone cada supuesto en
@@ -1738,3 +1738,321 @@ print(supuestos.set_index("#").to_string())
 # Con los supuestos medidos, los **pasos 5 y 6** pueden decir cuánto dinero hay en juego y
 # cuánto de eso no se puede afirmar. Un hallazgo sin supuesto declarado no es un hallazgo:
 # es una opinión con gráficas.
+# %% [markdown]
+# # Paso 5 · Hallazgos por dinero en juego
+#
+# Hasta aquí el cuaderno dejó los datos limpios y los supuestos medidos. Este paso contesta
+# la pregunta del dueño: **¿cuánto dinero es y qué atiendo primero?**
+#
+# Cinco hallazgos, cada uno con su cuenta a la vista y con el supuesto del que depende. El
+# orden es por monto, y eso no siempre coincide con el orden de urgencia: al final se dice
+# por qué. Los montos **no se suman entre sí**: tres de los cinco miran la misma cartera
+# desde ángulos distintos.
+
+# %%
+# * ---- LA CARTERA QUE YA SE PASÓ DE LOS 90 DÍAS ---
+# * La cartera se construye con lo que cada factura debe hoy: lo facturado, menos lo
+# * cobrado, menos lo devuelto. La antigüedad se mide contra el corte del cierre.
+
+cartera = pd.DataFrame({"saldo": abierto_despues})
+cartera["cliente"] = facturas.set_index("folio")["cliente_codigo"].loc[cartera.index]
+cartera["dias"] = dias_atraso.loc[cartera.index]
+cartera["tramo"] = [tramo(d) for d in cartera["dias"]]
+orden = ["no vencido", "1 a 30", "31 a 60", "61 a 90", "más de 90"]
+por_tramo = cartera.groupby("tramo")["saldo"].sum().reindex(orden)
+total_cartera = float(cartera["saldo"].sum())
+vencido_90 = float(por_tramo["más de 90"])
+parte_90 = vencido_90 / total_cartera
+
+fig, ax = plt.subplots()
+barras = ax.bar(por_tramo.index, por_tramo.values / 1e6,
+                color=["#b8c2cc", "#8d9aa8", "#d0a72c", "#c4702f", "#a32020"])
+ax.set_title("La cartera, por antigüedad al 30 de septiembre de 2026")
+ax.set_xlabel("Tramo de atraso")
+ax.set_ylabel("Millones de pesos")
+ax.bar_label(barras, fmt="%.2f", padding=3)
+ax.set_ylim(0, por_tramo.max() / 1e6 * 1.18)
+plt.tight_layout()
+plt.show()
+
+print(f"cartera abierta: MXN {total_cartera:,.2f}")
+print(f"a más de 90 días: MXN {vencido_90:,.2f} ({parte_90:.1%} de la cartera)")
+print(f"vencido en total: MXN {total_cartera - float(por_tramo['no vencido']):,.2f}")
+
+# * ---- PARTE 1 · DE DÓNDE SALE CADA PESO DE LA CARTERA ---
+# abierto_despues → la serie de saldos por factura que quedó al final del paso 3, ya con el
+#   pago mal aplicado reasignado. No se vuelve a calcular aquí: se usa la corregida.
+# pd.DataFrame({"saldo": ...}) → convierte esa serie en tabla para poder pegarle columnas.
+# .loc[cartera.index] → trae, para cada factura abierta, su cliente y sus días de atraso.
+#   Los tres vienen de tablas distintas y se alinean por el folio, que es la llave.
+# [tramo(d) for d in ...] → aplica la función de tramos del paso 3 a cada día de atraso.
+#   Se usa la misma función, no una copia: si cambiara el criterio, cambia en un solo lugar.
+# .reindex(orden) → fija el orden de los tramos, de lo más nuevo a lo más viejo. Sin esto,
+#   pandas los ordenaría alfabéticamente y la gráfica perdería el sentido.
+# ax.bar(...) → dibuja una barra por tramo, con el monto en millones para que las cifras
+#   quepan en el eje. Los colores van del gris al rojo: el rojo es el dinero más viejo.
+# ax.bar_label(barras, fmt="%.2f") → escribe encima de cada barra su valor, con dos
+#   decimales. Sin esto la gráfica obliga a adivinar la altura.
+# ? La gráfica es una sola idea: cuánto hay en cada tramo. Si el lector se lleva una cosa,
+# ? es que la barra roja no es la más grande y aun así es la que hay que atender primero.
+
+# %%
+# * ---- QUIÉN CARGA CON LA COBRANZA VIEJA ---
+# * La misma cartera, mirada por vendedor. No es un hallazgo distinto: es la misma deuda
+# * repartida de otra manera, y sirve para saber a quién preguntarle.
+
+vendedor_de = clientes.set_index("codigo")["vendedor"]
+cartera["vendedor"] = cartera["cliente"].map(vendedor_de)
+por_vendedor = cartera.groupby("vendedor").agg(cartera=("saldo", "sum"))
+por_vendedor["vieja"] = (cartera[cartera["dias"] > 60]
+                         .groupby("vendedor")["saldo"].sum())
+por_vendedor["vieja"] = por_vendedor["vieja"].fillna(0)
+por_vendedor["parte"] = por_vendedor["vieja"] / por_vendedor["cartera"]
+peor_vendedor = por_vendedor["parte"].idxmax()
+vieja_peor = float(por_vendedor.loc[peor_vendedor, "vieja"])
+
+eje = por_vendedor.index
+x = range(len(eje))
+fig, ax = plt.subplots()
+ax.bar([i - 0.2 for i in x], por_vendedor["cartera"] / 1e6, width=0.4,
+       label="cartera total", color="#b8c2cc")
+ax.bar([i + 0.2 for i in x], por_vendedor["vieja"] / 1e6, width=0.4,
+       label="a más de 60 días", color="#a32020")
+ax.set_xticks(list(x))
+ax.set_xticklabels(eje)
+ax.set_title("Cartera total y cartera vieja, por vendedor")
+ax.set_xlabel("Vendedor")
+ax.set_ylabel("Millones de pesos")
+ax.legend(frameon=False)
+plt.tight_layout()
+plt.show()
+
+print(por_vendedor.assign(parte=lambda d: d["parte"].map(lambda x: f"{x:.1%}")).round(2).to_string())
+
+# * ---- PARTE 1 · LA MISMA DEUDA, POR VENDEDOR ---
+# cartera["cliente"].map(vendedor_de) → a cada factura abierta le pega el vendedor de su
+#   cliente, con el mismo diccionario que se usó para el RFC en el paso 3.
+# groupby("vendedor").agg(cartera=("saldo", "sum")) → una fila por vendedor con la suma de
+#   su cartera. agg permite nombrar la columna resultante en el mismo paso.
+# cartera[cartera["dias"] > 60] → se queda solo con las facturas de más de dos meses. De
+#   ahí, la suma por vendedor es su cartera vieja.
+# .fillna(0) → un vendedor sin cartera vieja no aparece en el filtro; se rellena con cero
+#   para que la comparación entre los tres no quede coja.
+# [i - 0.2 for i in x] y [i + 0.2 for i in x] → corren media barra a cada lado para que las
+#   dos barras de un mismo vendedor queden juntas y no encimadas.
+# ? El número que importa no es cuánto tiene cada vendedor, sino qué proporción de lo suyo
+# ? está viejo. Un vendedor con cartera chica y toda vencida es un problema distinto de uno
+# ? con cartera grande y al día.
+# ! Este hallazgo es el mismo dinero del hallazgo 1, no dinero adicional: si se suman los
+# ! dos, se cuenta dos veces.
+
+# %%
+# * ---- LA CONCENTRACIÓN: POCO DE MUCHOS O MUCHO DE POCOS ---
+# * Qué pasa si el cliente más grande se atora. Se mide en la cartera, que es donde duele,
+# * y se consolida por RFC para no volver a partir al mismo negocio en dos.
+
+nombres = clientes.set_index("codigo")["nombre"]
+rfc_de = clientes.set_index("codigo")["rfc"]
+cartera["rfc"] = cartera["cliente"].map(rfc_de)
+por_rfc = cartera.groupby("rfc")["saldo"].sum().sort_values(ascending=False)
+mayor_rfc = float(por_rfc.iloc[0])
+parte_mayor = mayor_rfc / total_cartera
+top3_cartera = float(por_rfc.nlargest(3).sum())
+parte_top3 = top3_cartera / total_cartera
+
+nombre_por_rfc = cartera.groupby("rfc")["cliente"].first().map(nombres)
+top8 = por_rfc.head(8)
+etiquetas = [nombre_por_rfc[r][:26] for r in top8.index]
+posiciones = list(range(len(top8)))
+fig, ax = plt.subplots()
+barras = ax.barh(posiciones, (top8.values / 1e6)[::-1], color="#4a5568")
+ax.set_yticks(posiciones)
+ax.set_yticklabels(etiquetas[::-1])
+ax.set_title("Los ocho deudores más grandes, por contribuyente")
+ax.set_xlabel("Millones de pesos")
+ax.bar_label(barras, fmt="%.2f", padding=3)
+ax.set_xlim(0, top8.max() / 1e6 * 1.22)
+plt.tight_layout()
+plt.show()
+
+print(f"los ocho primeros deben MXN {top8.sum():,.2f} "
+      f"({top8.sum() / total_cartera:.1%} de la cartera)")
+print(f"los tres primeros deben MXN {top3_cartera:,.2f} ({parte_top3:.1%})")
+print(f"el mayor, con sus dos cuentas juntas: MXN {mayor_rfc:,.2f} ({parte_mayor:.1%})")
+
+# * ---- PARTE 1 · CONCENTRAR POR CONTRIBUYENTE, NO POR CUENTA ---
+# cartera["rfc"] = cartera["cliente"].map(rfc_de) → pega a cada factura el RFC de su
+#   cliente. Como el negocio con dos códigos comparte RFC, agrupar por RFC lo vuelve uno.
+# groupby("rfc")["saldo"].sum().sort_values(ascending=False) → el ranking de deudores
+#   reales, del que más debe al que menos.
+# .iloc[0] → el primero de la lista. .nlargest(3) → los tres primeros.
+# La división entre el total es la concentración: qué parte de toda la cartera depende de
+#   unos cuantos.
+# nombre_por_rfc = groupby("rfc")["cliente"].first().map(nombres) → un nombre por
+#   contribuyente. Se toma el primero de sus cuentas, porque las dos son el mismo negocio.
+# Las barras van horizontales porque los nombres son largos: en vertical no caben. Se
+#   recortan a 26 caracteres para que el eje se lea.
+# posiciones = list(range(len(top8))) → el eje vertical se numera de cero en adelante, y
+#   los nombres se ponen aparte con set_yticklabels. Si se pasaran los nombres directo a
+#   barh, matplotlib los trataría como categorías y dos nombres iguales —el negocio con dos
+#   cuentas— se fusionarían en una sola barra, con el eje descuadrado.
+# [::-1] → invierte el orden de la lista. En una barra horizontal, el primer elemento
+#   queda abajo; invirtiendo, el que más debe queda arriba, que es donde se busca.
+# ? Se muestran ocho y no tres a propósito: con ocho se ve la forma de la concentración.
+# ? Con tres, el lector tendría que confiar en la cifra sin verla.
+
+# %%
+# * ---- LAS DEVOLUCIONES SE CONCENTRAN EN POCOS PRODUCTOS ---
+# * La tasa global de devolución es baja. El problema no es la tasa: es que un producto
+# * esté muy por encima de ella. Se mide sobre las líneas vendidas, no sobre el dinero.
+
+devoluciones = notas.groupby("producto_codigo").agg(
+    notas=("folio_nota", "count"), monto=("importe_con_iva", "sum"))
+devoluciones["lineas"] = ventas_limpias.groupby("producto_codigo").size()
+devoluciones["tasa"] = devoluciones["notas"] / devoluciones["lineas"]
+devoluciones["nombre"] = devoluciones.index.map(productos.set_index("codigo")["nombre"])
+tasa_global = len(notas) / len(ventas_limpias)
+con_volumen = devoluciones[devoluciones["lineas"] >= 20]
+peor = con_volumen.sort_values("tasa", ascending=False).head(8)
+
+posiciones = list(range(len(peor)))
+fig, ax = plt.subplots(figsize=(11, 5.2))
+barras = ax.bar(posiciones, peor["tasa"] * 100, color="#c4702f")
+ax.axhline(tasa_global * 100, color="#2f5d8a", linestyle="--", linewidth=1.6,
+           label=f"promedio general: {tasa_global:.1%}")
+ax.set_xticks(posiciones)
+ax.set_xticklabels(peor["nombre"], rotation=38, ha="right", fontsize=8)
+ax.set_title("Tasa de devolución de los ocho productos peores")
+ax.set_xlabel("Producto")
+ax.set_ylabel("Devoluciones por cada cien líneas vendidas")
+ax.bar_label(barras, fmt="%.1f", padding=3)
+ax.legend(frameon=False)
+plt.tight_layout()
+plt.show()
+
+print(con_volumen.sort_values("tasa", ascending=False).head(4)
+      [["nombre", "notas", "lineas", "tasa", "monto"]].round(
+          {"tasa": 4, "monto": 2}).to_string(index=False))
+print(f"tasa general: {tasa_global:.1%} · total devuelto: MXN {notas_total:,.2f}")
+
+# * ---- PARTE 1 · LA TASA POR PRODUCTO ---
+# notas.groupby("producto_codigo").agg(...) → por cada producto devuelto, cuántas notas y
+#   cuánto dinero.
+# ventas_limpias.groupby("producto_codigo").size() → cuántas líneas se vendieron de cada
+#   producto. size() cuenta los renglones de cada grupo.
+# tasa = notas / líneas → la proporción de devoluciones sobre lo vendido. Se mide por
+#   líneas y no por dinero a propósito: una devolución de un producto caro no debe pesar
+#   más que tres de uno barato.
+# con_volumen → solo los productos con al menos veinte líneas vendidas. Sin ese piso, un
+#   producto con una devolución sobre dos líneas saldría con tasa de 50 % y encabezaría la
+#   lista. Una tasa alta sobre dos líneas no es un hallazgo: es un accidente.
+# peor = ...head(8) → los ocho productos con la tasa más alta, entre los que tienen
+#   volumen. El orden es por tasa, no por monto: primero se encuentra el patrón.
+# ax.axhline(...) → una línea horizontal en la tasa general. Es la referencia que convierte
+#   una barra alta en un hallazgo: sin ella, cualquier barra parece normal.
+# posiciones = list(range(len(peor))) → el eje se numera y los nombres van aparte, igual que
+#   en la gráfica de concentración. Aquí importa más: «Servilletas Río Claro 100 pzas» y
+#   «Servilletas Río Claro 250 pzas» empiezan igual, y como categorías de texto matplotlib
+#   las habría fundido en una sola barra, con dos valores encimados.
+# plt.xticks(rotation=38, ha="right", fontsize=8) → los nombres son largos; se giran y se
+#   achican para que quepan completos. No se recortan: un nombre cortado a la mitad es
+#   peor que uno chico.
+# ? Una tasa del 25 % no dice nada sola. Dice algo cuando el promedio es 3.8 %: tres de
+# ? cada cuatro devoluciones de ese producto no son casualidad.
+
+# %%
+# * ---- CUATRO PRODUCTOS QUE SE VENDEN POR DEBAJO DE SU COSTO ---
+# * No es una opinión sobre el precio: es la resta. Si el costo del catálogo es más alto
+# * que el precio de venta, cada pieza que sale deja una pérdida.
+
+margen_producto = con_costo.groupby("producto_codigo").agg(
+    venta=("venta_sin_iva", "sum"), costo=("costo_total", "sum"))
+margen_producto["margen"] = ((margen_producto["venta"] - margen_producto["costo"])
+                             / margen_producto["venta"])
+margen_producto["nombre"] = margen_producto.index.map(productos.set_index("codigo")["nombre"])
+negativos = margen_producto[margen_producto["margen"] < 0].sort_values("margen")
+perdida_directa = float((negativos["venta"] - negativos["costo"]).sum())
+margen_que_falta = float((negativos["venta"] * margen
+                          - (negativos["venta"] - negativos["costo"])).sum())
+print(negativos[["nombre", "venta", "costo", "margen"]].round(
+    {"venta": 2, "costo": 2, "margen": 4}).to_string())
+print(f"pérdida directa en el año: MXN {abs(perdida_directa):,.2f}")
+print(f"margen que no se ganó, contra el promedio del negocio: MXN {margen_que_falta:,.2f}")
+
+# * ---- PARTE 1 · LA RESTA QUE CONVIERTE UNA SOSPECHA EN UN HALLAZGO ---
+# groupby("producto_codigo").agg(venta=..., costo=...) → por producto, lo vendido sin IVA y
+#   lo que costó. Las dos columnas ya existen desde el paso 4.
+# margen = (venta − costo) / venta → un número negativo aquí significa que se vendió por
+#   debajo del costo. No hay interpretación: es la resta.
+# [margen < 0] → el filtro. sort_values("margen") los ordena del peor al menos malo.
+# perdida_directa → la suma de lo que se pierde hoy, línea por línea.
+# margen_que_falta → lo que habrían dejado si tuvieran el margen promedio del negocio. No
+#   es una promesa de mejora: es el tamaño del hueco, para decidir si vale la pena revisar
+#   el precio de esos cuatro.
+# ? La diferencia entre las dos cifras importa: la primera es dinero que ya salió; la
+# ? segunda es dinero que nunca entró. Se presentan separadas para no sumar peras con
+# ! manzanas, y porque la primera es un hecho y la segunda es una oportunidad.
+
+# %%
+# * ---- LOS CINCO HALLAZGOS, ORDENADOS POR MONTO ---
+# * La tabla del final. El monto ordena; la columna «qué habilita» dice qué decisión abre
+# * cada uno. Y una nota que va en el cierre: estos montos no se suman.
+
+hallazgos = pd.DataFrame([
+    {"#": 1,
+     "Hallazgo": "Tres clientes concentran la cartera",
+     "Monto en juego": top3_cartera,
+     "Qué habilita": "Decidir si se pone un límite de crédito al mayor"},
+    {"#": 2,
+     "Hallazgo": f"El vendedor {peor_vendedor} carga con la cobranza vieja",
+     "Monto en juego": vieja_peor,
+     "Qué habilita": "Revisar su cartera antes que la de los otros dos"},
+    {"#": 3,
+     "Hallazgo": "Las devoluciones se concentran en un producto",
+     "Monto en juego": float(notas_total),
+     "Qué habilita": "Revisar por qué ese producto regresa tanto"},
+    {"#": 4,
+     "Hallazgo": "La cartera pasada de 90 días",
+     "Monto en juego": vencido_90,
+     "Qué habilita": "Cobrar o negociar esos saldos este mes"},
+    {"#": 5,
+     "Hallazgo": "Cuatro productos por debajo de su costo",
+     "Monto en juego": abs(perdida_directa),
+     "Qué habilita": "Revisar el precio de esos cuatro"},
+])
+hallazgos = hallazgos.sort_values("Monto en juego", ascending=False)
+hallazgos["#"] = range(1, len(hallazgos) + 1)
+hallazgos["Monto en juego"] = hallazgos["Monto en juego"].map(lambda x: f"{x:,.2f}")
+print(hallazgos.to_string(index=False))
+
+# * ---- PARTE 1 · POR QUÉ ESTA TABLA LLEVA UNA ADVERTENCIA ---
+# Cada hallazgo se calcula en su celda y aquí solo se citan los números: ninguna cifra se
+#   escribe a mano.
+# .sort_values("Monto en juego") → ordena por el número, ANTES de darle formato de dinero.
+#   Si se ordenara después, el monto sería texto y «117,769.79» quedaría arriba de
+#   «1,399,247.14», porque la coma pesa menos que el uno. El formato va al final, para
+#   mostrar; el orden va sobre el número, para no mentir.
+# hallazgos["#"] = range(1, ...) → renumera después de ordenar, para que el número sea el
+#   rango por monto y no el orden en que se escribieron las celdas.
+# ! Los montos no se suman. Tres de estos cinco miran la misma cartera: la concentración por
+# ! cliente, la cobranza vieja por vendedor y lo que pasó de 90 días. Sumarlos contaría el
+# ! mismo dinero tres veces, y ese total falso es el error más común de un tablero.
+# ? El orden por monto no es el orden de urgencia, y se dice en el cierre: lo más grande es
+# ? la concentración, pero lo más urgente es el dinero que ya se pasó de los 90 días.
+
+# %% [markdown]
+# ## Lo que este paso deja
+#
+# - **Cinco hallazgos, cada uno con su cuenta.** Ninguno dice «hay oportunidad de mejora»:
+#   todos dicen cuánto dinero es y sobre qué dato se calculó.
+# - **Una sola gráfica por idea.** La antigüedad, la concentración, las devoluciones. Nada
+#   de tableros con veinte cuadros: lo que no cambia una decisión no entra.
+# - **Los montos no se suman.** Tres de los cinco miran la misma cartera. Sumarlos da un
+#   número grande y falso, y es el error más común de los tableros de «dinero en juego».
+# - **El orden por monto no es el orden de urgencia.** Lo más grande es la concentración;
+#   lo más urgente es lo que ya lleva más de 90 días sin cobrarse.
+#
+# Cada uno de estos hallazgos depende de un supuesto del paso 4: la antigüedad, del corte;
+# la concentración, de haber consolidado por RFC; el margen, del costo del catálogo. El
+# **paso 6** dice qué de todo esto no se puede afirmar con estos datos y qué haría falta
+# para afirmarlo.
