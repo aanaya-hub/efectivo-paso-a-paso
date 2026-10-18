@@ -2086,3 +2086,165 @@ print(hallazgos.to_string(index=False))
 # la concentración, de haber consolidado por RFC; el margen, del costo del catálogo. El
 # **paso 6** dice qué de todo esto no se puede afirmar con estos datos y qué haría falta
 # para afirmarlo.
+# %% [markdown]
+# # Paso 6 · Lo que estos datos NO alcanzan a responder
+#
+# Un análisis que no dice sus límites está pidiendo que le crean. Este paso es el que dice,
+# con el mismo cuidado que los hallazgos, **qué pregunta no se puede contestar** con estos
+# seis archivos, por qué, y qué haría falta para contestarla.
+#
+# No es una lista de excusas: cada límite dice qué hallazgo del paso 5 deja más débil. Un
+# límite que no cambia ninguna conclusión no vale la pena escribirlo.
+
+# %%
+# * ---- LÍMITE 1 · LA VENTANA RECORTA LA CARTERA ---
+# * Las facturas solo existen desde abril. Eso no es un detalle: significa que la deuda más
+# * vieja no está en los datos. El número que se reportó es un piso, no un techo.
+
+factura_mas_vieja = pd.to_datetime(facturas["fecha_emision"]).min()
+dias_posibles = int((cierre.normalize() - factura_mas_vieja).days)
+dias_observados = int(dias_atraso.loc[abierto_despues.index].max())
+liquidadas = int((saldos_ok <= 0.005).sum())
+print(f"la factura más vieja es del {factura_mas_vieja.date()}")
+print(f"eso permite ver como máximo {dias_posibles} días de atraso")
+print(f"la más atrasada que hay en la cartera: {dias_observados} días")
+print(f"facturas liquidadas dentro de la ventana: {liquidadas} de {len(facturas)}")
+print(f"seguían abiertas al corte: {len(abierto_despues)}")
+
+# * ---- PARTE 1 · QUÉ SIGNIFICA QUE LA VENTANA EMPIECE EN ABRIL ---
+# facturas["fecha_emision"] convertido a fecha y con .min() → el día más viejo que el
+#   archivo conoce. Todo lo anterior no existe para el análisis.
+# (cierre - factura_mas_vieja).days → cuántos días caben entre ese día y el corte. Es el
+#   techo de antigüedad que los datos permiten: 182 días, medio año.
+# dias_atraso.loc[abierto_despues.index].max() → la antigüedad real de la factura más vieja
+#   que sigue sin pagarse. Es menor que el techo, y ahí está el problema.
+# ! Este es el límite que más importa, y va en la dirección incómoda: si una factura de
+# ! marzo no está en el archivo, el monto de más de 90 días que se reportó es un piso. La
+# ! deuda vieja real es al menos esa; cuánto más, no se puede saber con estos datos.
+# ? Lo contrario —un techo— sería cómodo y falso. Se dice tal como es: el número se queda
+# ? corto, y quien decida con él debe saber que se queda corto.
+
+# %%
+# * ---- LÍMITE 2 · LAS VENTAS SIN FACTURA Y LOS CLIENTES QUE NO COMPRARON ---
+# * Dos huecos que sí se pueden medir. No cambian el total, pero dejan preguntas abiertas.
+
+sin_factura = ventas_limpias[ventas_limpias["folio"].str.startswith("NV")]
+lineas_nv = int(len(sin_factura))
+monto_nv = float(sin_factura["importe"].sum())
+parte_nv = monto_nv / float(ventas_limpias["importe"].sum())
+sin_compra = int(len(clientes) - ventas_limpias["cliente_codigo"].nunique())
+print(f"líneas sin factura (nota de venta): {lineas_nv:,}")
+print(f"su monto: MXN {monto_nv:,.2f} ({parte_nv:.1%} de la venta)")
+print(f"clientes del catálogo que no compraron nada: {sin_compra} de {len(clientes)}")
+
+# * ---- PARTE 1 · LO QUE ESTOS DOS HUECOS DEJAN SIN SABER ---
+# .str.startswith("NV") → las líneas cuyo folio empieza con esas letras. Son documentos que
+#   se entregaron y nunca se facturaron, así que no tienen contraparte en el archivo de
+#   facturas ni en el de pagos.
+# Su monto es venta, y por eso entra al cuadre: el total del dueño las incluye. Pero no se
+#   puede saber si se cobraron, porque el cobro solo se registra contra una factura.
+# sin_compra → la diferencia entre el catálogo y los clientes que aparecen al menos una vez
+#   en las ventas. Son cuentas abiertas que no compraron en el año.
+# ? Los dos son preguntas que sí tienen respuesta posible, no con estos archivos: con el
+# ? reporte de cobranza de las notas de venta y con el motivo de alta de cada cuenta.
+
+# %%
+# * ---- LA TABLA DE LÍMITES ---
+# * Ocho preguntas que estos datos no pueden contestar. En cada una: por qué, qué haría
+# * falta para contestarla y qué hallazgo del paso 5 queda más débil por eso.
+
+limites = pd.DataFrame([
+    {"#": 1,
+     "Pregunta que no se puede contestar": "¿Cuánto de la cartera vieja se acaba cobrando?",
+     "Por qué": "Hay seis meses de facturas y pagos, no más",
+     "Qué haría falta": "Pagos de 24 meses o el reporte de castigos",
+     "Qué queda débil": "El monto de más de 90 días: es un piso, no un techo"},
+    {"#": 2,
+     "Pregunta que no se puede contestar": "¿Cuánto capital hay detenido hoy en la bodega?",
+     "Por qué": "El inventario es de un solo corte, de hace 92 días",
+     "Qué haría falta": "Inventario mes a mes del año",
+     "Qué queda débil": "No hay hallazgo: el capital detenido no se pudo medir"},
+    {"#": 3,
+     "Pregunta que no se puede contestar": "¿La empresa gana o pierde?",
+     "Por qué": "No hay sueldos, renta ni fletes; solo compras de mercancía",
+     "Qué haría falta": "Estado de resultados de los doce meses",
+     "Qué queda débil": "El margen bruto no es utilidad y no debe leerse así"},
+    {"#": 4,
+     "Pregunta que no se puede contestar": "¿En cuál de las dos bodegas se pierde el margen?",
+     "Por qué": "El reporte de ventas no trae la columna de almacén",
+     "Qué haría falta": "La columna de almacén en el mismo reporte",
+     "Qué queda débil": "El hallazgo del margen no se puede ubicar en una bodega"},
+    {"#": 5,
+     "Pregunta que no se puede contestar": "¿Por qué regresan los productos?",
+     "Por qué": "El motivo es una etiqueta de cinco opciones, sin evidencia",
+     "Qué haría falta": "Las notas con su causa documentada: foto, lote, transportista",
+     "Qué queda débil": "El hallazgo de devoluciones dice dónde, no por qué"},
+    {"#": 6,
+     "Pregunta que no se puede contestar": "¿El margen se está deteriorando?",
+     "Por qué": "Hay un solo costo, el de hoy, sin fecha",
+     "Qué haría falta": "Costo por mes o por lote de compra",
+     "Qué queda débil": "El margen es un promedio del año, no una tendencia"},
+    {"#": 7,
+     "Pregunta que no se puede contestar": "¿Las ventas caen por falta de producto?",
+     "Por qué": "No hay pedidos no surtidos ni faltantes de la bodega",
+     "Qué haría falta": "El reporte de pedidos pendientes por producto",
+     "Qué queda débil": "No se puede separar la demanda del abasto"},
+    {"#": 8,
+     "Pregunta que no se puede contestar": "¿Este año es mejor que el anterior?",
+     "Por qué": "Solo hay una ventana de doce meses",
+     "Qué haría falta": "Los doce meses anteriores, con la misma estructura",
+     "Qué queda débil": "La estacionalidad se ve una vez y sin comparación"},
+])
+print(limites.set_index("#").to_string())
+
+# * ---- PARTE 1 · CÓMO ESTÁ ARMADA LA TABLA ---
+# Cada renglón nombra la pregunta con la voz del dueño y no con la del analista: «¿la
+#   empresa gana o pierde?» dice más que «falta el estado de resultados».
+# La columna «Qué queda débil» es la que impide que esta tabla sea un trámite. Un límite
+#   que no toca ningún hallazgo del paso 5 no se anota; y si lo toca, se dice cuál.
+# ? Hay un renglón que no debilita un hallazgo, lo cancela: el del inventario. Ese hallazgo
+# ? no se hizo y aquí se explica por qué, en lugar de esconderlo.
+
+# %%
+# * ---- LÍMITE 3 · LA DIFERENCIA ENTRE VENDEDORES NO SE PUEDE ATRIBUIR ---
+# * El hallazgo dice que la cartera de un vendedor está más vieja que la de los otros. Eso es
+# * un hecho del dato. Decir que el vendedor lo causa es otra cosa, y no está sostenido.
+
+plazo = clientes.groupby("vendedor")["credito_dias"].mean()
+mayoreo = clientes.groupby("vendedor")["tipo"].apply(lambda s: (s == "Mayoreo").mean())
+comparacion = por_vendedor[["cartera", "vieja", "parte"]].copy()
+comparacion["plazo (días)"] = plazo.round(1)
+comparacion["clientes de mayoreo"] = mayoreo
+tabla(comparacion, dinero=["cartera", "vieja"], parte=["parte", "clientes de mayoreo"])
+print("con estos datos no se puede separar el vendedor de los clientes que le tocaron")
+
+# * ---- PARTE 1 · POR QUÉ NO ES CAUSAL ---
+# groupby("vendedor")["credito_dias"].mean() → el plazo promedio que se le autorizó a los
+#   clientes de cada vendedor. Si los plazos fueran muy distintos, la diferencia de cartera
+#   vieja se explicaría por las condiciones y no por el vendedor.
+# (s == "Mayoreo").mean() → la proporción de clientes de mayoreo. Un vendedor con más
+#   mayoreo cobra más tarde por la naturaleza de su cartera, no por cómo cobra.
+# Los dos números salen casi parejos entre los tres, y aun así no alcanza: la asignación de
+#   clientes no fue al azar. Un vendedor puede haber recibido las cuentas más difíciles.
+# ! Para afirmar que el vendedor causa la morosidad haría falta un diseño: comparar clientes
+# ! parecidos asignados al azar, o un corte donde el mismo vendedor cambie de cartera. Con
+# ! una foto de los tres, lo único defendible es la descripción y la pregunta.
+# ? El hallazgo se queda como está —«la cartera de este vendedor es la más vieja»— porque
+# ? eso sí es un hecho. Lo que se quita es la conclusión de que él es la causa.
+
+# %% [markdown]
+# ## Lo que este paso deja
+#
+# - **Ocho límites, cada uno con su efecto sobre lo que se dijo.** El más importante va en
+#   la dirección incómoda: el monto de más de 90 días se queda corto.
+# - **Un hallazgo que no se hizo, y por qué.** El capital detenido en inventario no se pudo
+#   medir con un corte de hace 92 días. Se dice en lugar de rellenarlo.
+# - **Ninguna afirmación de causalidad.** La diferencia entre vendedores es un hecho del
+#   dato; decir que el vendedor la causa no está sostenido por este diseño. La forma de
+#   sostenerlo también se dice: comparar clientes parecidos, no una foto de tres.
+# - **Un límite no es una disculpa.** Es lo que separa un análisis que se puede usar de uno
+#   que solo se puede creer. Lo que sigue —**el paso 7**— es cómo se comprueba si la
+#   decisión sirvió: qué se mide, con qué dato y en cuánto tiempo.
+#
+# Con esto el cuaderno ya dice lo que sabe y lo que no. Falta la parte que casi nunca se
+# escribe: cómo sabremos, dentro de tres meses, si la decisión fue la correcta.
