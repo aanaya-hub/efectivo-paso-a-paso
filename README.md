@@ -14,7 +14,7 @@ Los datos son inventados y traen a propósito los defectos que traen los datos d
 
 ## Estado
 
-El cuaderno va por los **pasos 1 a 6 de 7**:
+El cuaderno está **completo**, con sus siete pasos:
 
 1. ✅ Lo que pedí y lo que llegó
 2. ✅ Perfilado y validación contra los totales
@@ -22,9 +22,9 @@ El cuaderno va por los **pasos 1 a 6 de 7**:
 4. ✅ Supuestos declarados
 5. ✅ Hallazgos por dinero en juego
 6. ✅ Lo que estos datos no alcanzan a responder
-7. ⬜ Cómo sabremos si funcionó
+7. ✅ Cómo sabremos si funcionó
 
-Mientras no estén los siete, este repositorio se queda **privado**.
+El repositorio sigue **privado** hasta que se decida publicarlo.
 
 ## Cómo se corre
 

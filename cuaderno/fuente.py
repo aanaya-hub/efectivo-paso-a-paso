@@ -2248,3 +2248,159 @@ print("con estos datos no se puede separar el vendedor de los clientes que le to
 #
 # Con esto el cuaderno ya dice lo que sabe y lo que no. Falta la parte que casi nunca se
 # escribe: cómo sabremos, dentro de tres meses, si la decisión fue la correcta.
+# %% [markdown]
+# # Paso 7 · Cómo sabremos si funcionó
+#
+# Un hallazgo que no se puede volver a medir es una anécdota. Este paso deja, para cada uno
+# de los cinco, **qué se mide, con qué dato, contra qué número de hoy y en cuánto tiempo**.
+#
+# Y deja una columna que casi nunca se escribe: qué haría tramposa la medición. Sin eso, el
+# número de dentro de tres meses se puede leer como una victoria aunque no lo sea.
+
+# %%
+# * ---- LA LÍNEA BASE: LOS NÚMEROS DE HOY ---
+# * Para saber si algo cambió hay que dejarlo anotado antes de tocar nada. Estos son los
+# * cinco números contra los que se va a comparar, con el mismo corte del 30 de septiembre.
+
+tasa_peor = float(peor.iloc[0]["tasa"])
+nombre_peor = str(peor.iloc[0]["nombre"])
+margen_peor = float(margen_producto["margen"].min())
+parte_v02 = float(por_vendedor.loc[peor_vendedor, "parte"])
+
+linea_base = pd.DataFrame([
+    {"#": 1, "Indicador": "Parte de la cartera en los tres mayores deudores",
+     "Hoy": f"{parte_top3:.1%}", "Monto del hallazgo": top3_cartera},
+    {"#": 2, "Indicador": f"Tasa de devolución de {nombre_peor}",
+     "Hoy": f"{tasa_peor:.1%}", "Monto del hallazgo": float(notas_total)},
+    {"#": 3, "Indicador": f"Parte de la cartera de {peor_vendedor} con más de 60 días",
+     "Hoy": f"{parte_v02:.1%}", "Monto del hallazgo": vieja_peor},
+    {"#": 4, "Indicador": "Parte de la cartera con más de 90 días",
+     "Hoy": f"{parte_90:.1%}", "Monto del hallazgo": vencido_90},
+    {"#": 5, "Indicador": "Margen del peor producto de los cuatro",
+     "Hoy": f"{margen_peor:.1%}", "Monto del hallazgo": abs(perdida_directa)},
+])
+tabla(linea_base, dinero=["Monto del hallazgo"])
+
+# * ---- PARTE 1 · LO QUE SE ANOTA ANTES DE EMPEZAR ---
+# tasa_peor y nombre_peor → el producto con la tasa de devolución más alta entre los que
+#   tienen volumen. Se sacan de la tabla del paso 5, no se escriben a mano.
+# margen_peor → el margen más negativo de los cuatro productos que se venden bajo costo.
+# parte_v02 → la proporción de la cartera vieja del vendedor que salió peor. Se busca por
+#   su nombre, así que si el peor vendedor cambia, la tabla cambia con él.
+# ? Los cinco indicadores son proporciones, no montos, salvo el último. Una proporción se
+# ? puede comparar aunque el negocio crezca; un monto no. Esa decisión se explica en la
+# ? celda siguiente, y es la más importante de todo el paso.
+
+# %%
+# * ---- LA TABLA DE MEDICIÓN ---
+# * Cada hallazgo con la decisión que habilita, el indicador que se va a seguir, con qué
+# * archivo se calcula, cuándo se revisa y qué la haría tramposa.
+
+medicion = pd.DataFrame([
+    {"#": 1,
+     "Decisión que habilita": "Poner o no un límite de crédito al mayor deudor",
+     "Qué se mide": "Parte de la cartera en los tres mayores",
+     "Con qué dato": "Facturas, pagos y notas del trimestre",
+     "Cuándo": "Al cierre de cada trimestre",
+     "Qué la haría tramposa": "Si la cartera total baja, la parte sube sin que el riesgo suba"},
+    {"#": 2,
+     "Decisión que habilita": "Revisar por qué ese producto regresa tanto",
+     "Qué se mide": "Tasa de devolución del producto, por motivo",
+     "Con qué dato": "Notas de crédito del mes, con su motivo",
+     "Cuándo": "Cada mes, tres meses seguidos",
+     "Qué la haría tramposa": "Un lote dañado puntual mueve la tasa sin que el problema sea el producto"},
+    {"#": 3,
+     "Decisión que habilita": "Revisar su cartera antes que la de los otros dos",
+     "Qué se mide": "Parte de su cartera con más de 60 días",
+     "Con qué dato": "Facturas y pagos del mes, por vendedor",
+     "Cuándo": "Cada mes",
+     "Qué la haría tramposa": "Si le entran cuentas nuevas o grandes, la proporción se mueve por mezcla"},
+    {"#": 4,
+     "Decisión que habilita": "Cobrar o negociar esos saldos este mes",
+     "Qué se mide": "Parte de la cartera con más de 90 días",
+     "Con qué dato": "Facturas y pagos del mes",
+     "Cuándo": "Cada mes",
+     "Qué la haría tramposa": "El monto sube solo porque la ventana de facturas se alarga; la proporción no"},
+    {"#": 5,
+     "Decisión que habilita": "Revisar el precio de esos cuatro productos",
+     "Qué se mide": "Margen de esos cuatro productos, uno por uno",
+     "Con qué dato": "Ventas del mes y el costo vigente del catálogo",
+     "Cuándo": "Un mes después de cambiar el precio",
+     "Qué la haría tramposa": "Si el costo se mueve, el margen cambia aunque el precio no"},
+])
+print(medicion.set_index("#").to_string())
+
+# * ---- PARTE 1 · POR QUÉ CADA RENGLÓN TIENE ESAS CINCO COLUMNAS ---
+# «Decisión que habilita» → lo que se va a hacer con el hallazgo. Sin una decisión, el
+#   indicador no sirve para nada: se mide por medir.
+# «Qué se mide» → el indicador, en una frase. Si no cabe en una frase, no es un indicador.
+# «Con qué dato» → el archivo del que sale. Si no se sabe de dónde sale, no se puede volver
+#   a medir, y entonces no es una medición: es un recuerdo.
+# «Cuándo» → la fecha de la siguiente lectura. Un indicador sin fecha se revisa nunca.
+# «Qué la haría tramposa» → la forma más fácil de leerlo mal. Es la columna que convierte
+#   esta tabla en algo distinto de una lista de buenos deseos.
+# ? Ninguna fila dice cuánto va a mejorar. Ese número no se puede prometer: depende de las
+# ? decisiones que tome el dueño y de cosas que no están en estos archivos.
+
+# %%
+# * ---- LA TRAMPA DE MEDIR MONTOS EN UNA VENTANA QUE CRECE ---
+# * El indicador 4 se mide en proporción y no en pesos por una razón concreta, y se puede
+# * mostrar: el monto de más de 90 días sube solo con que pasen los meses.
+
+dias_elegibles = max(0, dias_posibles - 90)
+meses_elegibles = dias_elegibles / 30.44
+meses_ventana = round(dias_posibles / 30.44)
+print(f"la ventana de facturas tiene {meses_ventana} meses")
+print(f"de esos, solo {meses_elegibles:.1f} pueden tener facturas de más de 90 días")
+print(f"o sea, {meses_elegibles / meses_ventana:.0%} de la ventana")
+print(f"en tres meses la ventana tendrá {meses_ventana + 3} meses y "
+      f"{meses_elegibles + 3:.1f} elegibles: el monto podría subir sin que nada empeore")
+
+# * ---- PARTE 1 · POR QUÉ EL PORCENTAJE SÍ ES COMPARABLE ---
+# dias_posibles - 90 → de los 182 días de historia, cuántos alcanzan a tener facturas con más
+#   de 90 días de atraso. Solo los primeros 92 días, o sea unos tres meses.
+# / 30.44 → el promedio de días de un mes. Sirve para pasar días a meses sin calendario.
+# meses_ventana = dias_posibles / 30.44 → cuántos meses tiene la ventana de FACTURAS, que
+#   son seis, no los doce de las ventas. Es la ventana que importa aquí, porque la cartera
+#   se construye con facturas.
+# / meses_ventana → qué parte de la ventana puede siquiera aportar deuda vieja.
+# Dentro de tres meses, el archivo tendrá nueve meses de facturas y seis podrán aportar
+#   deuda vieja. El mismo negocio, sin empeorar, mostraría un monto mayor.
+# ! Por eso el indicador es la proporción. Comparar montos entre cortes con ventanas de
+# ! distinto tamaño es comparar dos cosas distintas y llamarlo mejora o retroceso.
+# ? La proporción tiene su propia trampa —si el negocio crece, la proporción baja sin que se
+# ? haya cobrado mejor— y por eso la columna de la trampa lo dice en cada renglón.
+
+# %% [markdown]
+# ## Lo que este paso deja
+#
+# - **Cinco indicadores con línea base, fuente y fecha.** El número de hoy queda anotado
+#   antes de tocar nada, y con el mismo corte del 30 de septiembre.
+# - **La columna que importa es la última.** Qué haría tramposa la medición. Sin ella, el
+#   número de dentro de tres meses se puede leer como una victoria aunque no lo sea.
+# - **Se mide en proporción, no en pesos.** La ventana de facturas crece cada mes, así que
+#   el monto de la cartera vieja sube solo. Compararlo entre cortes sería comparar dos cosas
+#   distintas.
+# - **Ningún indicador promete una mejora.** No hay meta de resultado ni compromiso de
+#   ahorro: hay una forma de comprobar, dentro de tres meses, si la decisión sirvió.
+#
+# Con esto el cuaderno está completo: datos limpios, defectos con su efecto, supuestos
+# medidos, hallazgos ordenados por dinero, límites escritos y una forma de comprobar.
+
+# %% [markdown]
+# ## Alcance y limitaciones
+#
+# Este trabajo es analítica de datos aplicada a decisiones comerciales y de finanzas
+# corporativas. No constituye asesoría fiscal, contable, legal ni de inversión, ni un
+# dictamen o auditoría. Las cifras se derivan de la información proporcionada por el
+# cliente y de los supuestos declarados en este documento; su exactitud depende de la
+# calidad de esa información. Los resultados no están garantizados: dependen de los
+# datos de origen y de las decisiones que el cliente tome. Este entregable es un insumo
+# para decidir, no una recomendación de inversión ni una opinión fiscal.
+#
+# ---
+#
+# **Los datos de este cuaderno son inventados.** La empresa, sus clientes, sus productos y
+# todas las cifras los construí yo para mostrar el método completo, con sus defectos y sus
+# límites, sin usar información de nadie. El código que produce los datos está en
+# `generar_datos.py` y se reconstruye con una semilla fija.
