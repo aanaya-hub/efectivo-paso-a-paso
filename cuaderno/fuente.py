@@ -164,6 +164,38 @@ print("Datos del cliente:", RUTA_DATOS.relative_to(RAIZ),
 #   cuenta los elementos de la lista). print acepta varias cosas separadas por comas
 #   y las imprime en una sola línea.
 
+def tabla(datos, dinero=(), parte=()):
+    """Da formato de dinero y de porcentaje, y pinta en rojo lo negativo."""
+    vista = datos.copy()
+    for columna in dinero:
+        vista[columna] = vista[columna].map(lambda x: f"{x:,.2f}")
+    for columna in parte:
+        vista[columna] = vista[columna].map(lambda x: f"{x:.1%}")
+    con_color = vista.style.map(lambda v: "color: #A32020"
+                                if isinstance(v, str) and v.startswith("-") else "")
+    display({"text/html": con_color.to_html(), "text/plain": vista.to_string()},
+            raw=True)
+
+# * ---- EL AYUDANTE QUE DA FORMATO A LAS TABLAS ---
+# def tabla(datos, dinero=(), parte=()) → recibe una tabla y los nombres de las columnas que
+#   son dinero y de las que son porcentaje. Los dos últimos argumentos empiezan vacíos, así
+#   que se pueden omitir cuando la tabla no tiene dinero.
+# .map(lambda x: f"{x:,.2f}") → cambia cada número por un texto con separador de miles y dos
+#   decimales. Es lo que hace que 19816680.09 se lea 19,816,680.09 y que la columna se pueda
+#   comparar de un vistazo.
+# .map(lambda x: f"{x:.1%}") → lo mismo para los porcentajes, que así dejan de ser 0.0929 y
+#   pasan a 9.3 %.
+# .style.map(...) → arma la tabla con un estilo: si el valor ya es texto y empieza con un
+#   signo de menos, se pinta en rojo.
+# display({...}, raw=True) → muestra la tabla en dos versiones al mismo tiempo: una de HTML,
+#   que es la que lleva el color, y una de texto plano con los mismos números formateados.
+#   Si el lector abre el cuaderno en un visor que no dibuja HTML —GitHub a veces recorta los
+#   estilos—, igual ve la tabla con sus comas y sus signos. Y si solo se mostrara el HTML,
+#   el respaldo de pandas sería la palabra «Styler» y una dirección de memoria, que no dice
+#   nada.
+# ? Se escribe una vez y se usa en todas las tablas del cuaderno: si mañana cambia el
+# ? formato del dinero, cambia en un solo lugar y no en siete.
+
 # %% [markdown]
 # ## Los seis archivos que pedí
 #
@@ -1173,7 +1205,8 @@ desvio_real = desvio.reindex(bien.index).fillna(0)
 peor = desvio_real.abs().idxmax()
 desvio_peor = float(desvio_real.loc[peor])
 meses_tocados = int((desvio_real.abs() > 0.5).sum())
-pd.DataFrame({"desvío": desvio.sort_values().head(3)}).rename_axis("mes")
+tabla(pd.DataFrame({"desvío": desvio.sort_values().head(3)}).rename_axis("mes"),
+      dinero=["desvío"])
 
 # * ---- PARTE 1 · QUÉ HABRÍA PASADO SIN LA REGLA ---
 # mes_ingenuo(texto) → la función que simula al lector descuidado: parte la fecha por
@@ -1378,7 +1411,7 @@ pago_movido = float(pagos_imposibles["importe"].sum())
 print(f"pagos imposibles: {len(pagos_imposibles)} · MXN {pago_movido:,.2f}")
 print(f"cartera total: MXN {float(abierto_antes.sum()):,.2f} antes y "
       f"MXN {float(abierto_despues.sum()):,.2f} después")
-print(delta.to_string())
+tabla(delta.to_frame("diferencia"), dinero=["diferencia"])
 
 # * ---- PARTE 1 · LOS TRAMOS DE LA CARTERA ---
 # .dt.days → de una diferencia de fechas saca los días. Normalize quita la hora, para
@@ -1534,7 +1567,7 @@ sensibilidad = pd.DataFrame(sensibilidad)
 print(f"venta sin IVA: MXN {venta_sin_iva:,.2f}")
 print(f"costo del catálogo: MXN {costo_total:,.2f}")
 print(f"margen bruto: {margen:.1%}")
-sensibilidad
+tabla(sensibilidad)
 
 # * ---- PARTE 1 · EL MARGEN CON EL COSTO DEL CATÁLOGO ---
 # productos.set_index("codigo")["categoria"] → el catálogo convertido en dos listas que
@@ -1577,10 +1610,7 @@ print(f"limpieza: venta sin IVA MXN "
       f"margen {por_categoria.loc['Limpieza', 'margen']:.1%}")
 print(f"si los abarrotes fueran de tasa 0 %: la venta sin IVA sube a "
       f"MXN {venta_alt:,.2f} y el margen a {margen_alt:.1%}")
-mostrar = por_categoria.assign(margen=por_categoria["margen"].map(lambda x: f"{x:.1%}"))
-mostrar["venta_sin_iva"] = mostrar["venta_sin_iva"].round(2)
-mostrar["costo_total"] = mostrar["costo_total"].round(2)
-mostrar
+tabla(por_categoria, dinero=["venta_sin_iva", "costo_total"], parte=["margen"])
 
 # * ---- PARTE 1 · EL MARGEN PARTIDO POR CATEGORÍA ---
 # groupby("categoria")[[...]].sum() → suma dos columnas a la vez, agrupando por categoría.
@@ -1592,10 +1622,9 @@ mostrar
 # El escenario extremo: si **todos** los abarrotes fueran de tasa 0 %, el importe con
 #   IVA de esas líneas ya sería la venta sin IVA, sin dividir entre 1.16. Por eso se resta
 #   la base calculada y se suma el importe tal cual.
-# .assign(margen=...map(...)) → una copia de la tabla con el margen ya formateado como
-#   porcentaje. Se formatea solo para mostrar: la cuenta sigue siendo el número de antes.
-# mostrar["venta_sin_iva"].round(2) → redondea a centavos las columnas de dinero, para que
-#   la tabla se lea como un reporte y no como una salida de programa.
+# tabla(por_categoria, dinero=[...], parte=[...]) → el ayudante de la celda de arranque se
+#   encarga del formato: dos decimales con separador de miles para el dinero y porcentaje
+#   para el margen. La cuenta no cambia, solo cómo se ve.
 # ? Es el escenario más extremo, no el más probable. Se calcula igual porque marca el
 # ? techo: el margen verdadero está entre el número de arriba y este, y saber dónde está
 # ? el techo ayuda a decidir cuánta confianza ponerle al margen antes de tocarlo.
@@ -1620,7 +1649,8 @@ peor_mes = cambio_de_mes.abs().idxmax()
 cambio_peor = float(cambio_de_mes.loc[peor_mes])
 print(f"notas que cambiarían de mes: {cambian} de {len(comparable)}")
 print(f"el mes más afectado sería {peor_mes}: MXN {cambio_peor:,.2f}")
-cambio_de_mes[cambio_de_mes.abs() > 0.5].to_frame("diferencia")
+tabla(cambio_de_mes[cambio_de_mes.abs() > 0.5].to_frame("diferencia"),
+      dinero=["diferencia"])
 
 # * ---- PARTE 1 · LAS DOS CONVENCIONES, UNA AL LADO DE LA OTRA ---
 # folio_mes = groupby("folio")["mes"].first() → para cada factura, su mes. first() toma el
@@ -1827,7 +1857,7 @@ ax.legend(frameon=False)
 plt.tight_layout()
 plt.show()
 
-print(por_vendedor.assign(parte=lambda d: d["parte"].map(lambda x: f"{x:.1%}")).round(2).to_string())
+tabla(por_vendedor, dinero=["cartera", "vieja"], parte=["parte"])
 
 # * ---- PARTE 1 · LA MISMA DEUDA, POR VENDEDOR ---
 # cartera["cliente"].map(vendedor_de) → a cada factura abierta le pega el vendedor de su
@@ -1930,9 +1960,9 @@ ax.legend(frameon=False)
 plt.tight_layout()
 plt.show()
 
-print(con_volumen.sort_values("tasa", ascending=False).head(4)
-      [["nombre", "notas", "lineas", "tasa", "monto"]].round(
-          {"tasa": 4, "monto": 2}).to_string(index=False))
+tabla(con_volumen.sort_values("tasa", ascending=False).head(4)
+      [["nombre", "notas", "lineas", "tasa", "monto"]],
+      dinero=["monto"], parte=["tasa"])
 print(f"tasa general: {tasa_global:.1%} · total devuelto: MXN {notas_total:,.2f}")
 
 # * ---- PARTE 1 · LA TASA POR PRODUCTO ---
@@ -1974,8 +2004,8 @@ negativos = margen_producto[margen_producto["margen"] < 0].sort_values("margen")
 perdida_directa = float((negativos["venta"] - negativos["costo"]).sum())
 margen_que_falta = float((negativos["venta"] * margen
                           - (negativos["venta"] - negativos["costo"])).sum())
-print(negativos[["nombre", "venta", "costo", "margen"]].round(
-    {"venta": 2, "costo": 2, "margen": 4}).to_string())
+tabla(negativos[["nombre", "venta", "costo", "margen"]],
+      dinero=["venta", "costo"], parte=["margen"])
 print(f"pérdida directa en el año: MXN {abs(perdida_directa):,.2f}")
 print(f"margen que no se ganó, contra el promedio del negocio: MXN {margen_que_falta:,.2f}")
 
