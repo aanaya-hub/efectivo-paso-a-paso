@@ -6,3 +6,6 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 .DS_Store
+
+# Intermedio del informe: se regenera con `make informe`.
+informe/informe.html

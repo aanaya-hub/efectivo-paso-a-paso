@@ -33,6 +33,7 @@ Cada paso abre con la explicación y sigue con el código, comentado línea por 
 - Siete supuestos declarados, cinco de ellos con su sensibilidad calculada.
 - Cinco hallazgos ordenados por monto, con cuatro gráficas, y la advertencia de que los montos no se suman entre sí porque miran la misma cartera.
 - Ocho límites escritos y una negativa explícita a afirmar causalidad sin diseño.
+- **El informe ejecutivo** que recibe el cliente: seis páginas en PDF, con las cuatro gráficas y el descargo, en `informe/`.
 
 ## Cómo se corre
 
@@ -40,6 +41,7 @@ Cada paso abre con la explicación y sigue con el código, comentado línea por 
 make            # reconstruye los datos sintéticos y vuelve a ejecutar el cuaderno
 make datos      # solo los datos, y verifica que el cuadre cierre al centavo
 make cuaderno   # solo vuelve a ejecutar el cuaderno
+make informe    # arma el PDF del informe a partir de informe/informe.md
 make verificar  # solo la verificación, sin regenerar nada
 ```
 
@@ -49,6 +51,7 @@ Todo está generado con una semilla fija, así que dos corridas dan exactamente 
 
 ```
 demo_efectivo.ipynb      el cuaderno, ejecutado
+informe/                 el informe ejecutivo en PDF, su fuente y sus figuras
 cuaderno/fuente.py       su fuente en texto plano, revisable en un diff
 cuaderno/construir.py    convierte la fuente en el cuaderno y lo ejecuta
 generar_datos.py         genera el corpus sintético con sus ocho defectos

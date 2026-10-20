@@ -1,7 +1,7 @@
-.PHONY: todo datos verificar cuaderno limpiar
+.PHONY: todo datos verificar cuaderno informe limpiar
 
 # Reconstruye todo de cero, en orden.
-todo: datos cuaderno
+todo: datos cuaderno informe
 
 # Genera el corpus sintético y comprueba los ocho defectos y el cuadre.
 datos:
@@ -11,6 +11,10 @@ datos:
 # Vuelve a ejecutar el cuaderno desde su fuente.
 cuaderno:
 	python3 cuaderno/construir.py
+
+# Arma el informe ejecutivo en PDF a partir de informe/informe.md.
+informe:
+	python3 informe/construir.py
 
 # Solo la verificación (no regenera nada).
 verificar:
