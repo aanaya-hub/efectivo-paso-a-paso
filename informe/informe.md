@@ -11,7 +11,7 @@
 | **Fecha** | 18 de octubre de 2026 |
 | **Anexo reproducible** | el cuaderno `demo_efectivo.ipynb`, donde cada cifra de este informe traza a una celda |
 
-> **Los datos de este informe son inventados.** La empresa, sus clientes, sus productos y todas las cifras son sintéticos: prueban el método, no son trabajo hecho para un cliente. Cada número sale del cuaderno público que acompaña a este documento, y se puede volver a generar.
+> **Los datos de este informe son sintéticos.** La empresa, sus clientes, sus productos y todas las cifras son sintéticos: prueban el método, no son trabajo hecho para un cliente. Cada número sale del cuaderno público que acompaña a este documento, y se puede volver a generar.
 
 ## 1. Resumen para decidir
 
